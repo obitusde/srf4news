@@ -6,174 +6,154 @@
 <title>SRF 4 News Player</title>
 <style>
   :root {
-    --bg: #0a0a0a;
-    --surface: #161616;
-    --surface2: #222222;
-    --red: #e4001a;
-    --red-dim: #8a0010;
-    --white: #f0f0f0;
-    --grey: #888888;
-    --grey-dim: #444444;
-    --green: #00c853;
-    --font-mono: 'SF Mono', 'Fira Code', 'Courier New', monospace;
-    --font-sans: -apple-system, 'Helvetica Neue', Arial, sans-serif;
+    --bg:#0a0a0a;--surface:#161616;--surface2:#222;--red:#e4001a;--red-dim:#8a0010;
+    --white:#f0f0f0;--grey:#888;--grey-dim:#444;--green:#00c853;
+    --mono:'SF Mono','Fira Code','Courier New',monospace;
+    --sans:-apple-system,'Helvetica Neue',Arial,sans-serif;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  html, body {
-    background: var(--bg); color: var(--white);
-    font-family: var(--font-sans); height: 100%; overflow: hidden; user-select: none;
-  }
-  #app {
-    display: flex; flex-direction: column; height: 100dvh;
-    max-width: 480px; margin: 0 auto; padding: 12px 12px 8px; gap: 10px;
-  }
-  #header { display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
-  #logo { display: flex; align-items: center; gap: 8px; }
-  #logo-box { background: var(--red); color: #fff; font-weight: 900; font-size: 13px; padding: 3px 7px; border-radius: 3px; }
-  #logo-label { font-size: 13px; font-weight: 600; color: var(--grey); letter-spacing: 0.5px; text-transform: uppercase; }
-  #status-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--grey-dim); transition: background 0.3s; }
-  #status-dot.playing { background: var(--green); box-shadow: 0 0 7px var(--green); }
-  #status-dot.loading { background: var(--red); animation: pulse 1s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{background:var(--bg);color:var(--white);font-family:var(--sans);height:100%;overflow:hidden;user-select:none}
+  #app{display:flex;flex-direction:column;height:100dvh;max-width:480px;margin:0 auto;padding:12px 12px 8px;gap:10px}
 
-  #now-playing {
-    background: var(--surface); border-radius: 10px; padding: 14px 16px;
-    flex-shrink: 0; border-left: 3px solid var(--red);
-  }
-  #show-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--red); margin-bottom: 4px; }
-  #show-title { font-size: 18px; font-weight: 700; color: var(--white); line-height: 1.2; margin-bottom: 6px; min-height: 22px; }
-  #show-meta { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--grey); font-family: var(--font-mono); }
-  #show-time { color: var(--white); font-weight: 600; }
+  /* HEADER */
+  #hdr{display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+  #logo{display:flex;align-items:center;gap:8px}
+  #logo-box{background:var(--red);color:#fff;font-weight:900;font-size:13px;padding:3px 7px;border-radius:3px}
+  #logo-lbl{font-size:13px;font-weight:600;color:var(--grey);letter-spacing:.5px;text-transform:uppercase}
+  #dot{width:9px;height:9px;border-radius:50%;background:var(--grey-dim);transition:background .3s}
+  #dot.on{background:var(--green);box-shadow:0 0 7px var(--green)}
+  #dot.loading{background:var(--red);animation:pulse 1s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
-  #timeline-section { flex-shrink: 0; }
-  #timeline-labels { display: flex; justify-content: space-between; font-size: 10px; font-family: var(--font-mono); color: var(--grey); margin-bottom: 4px; padding: 0 2px; }
-  #timeline-track { width: 100%; height: 6px; background: var(--surface2); border-radius: 3px; position: relative; cursor: pointer; }
-  #timeline-fill { height: 100%; background: var(--red); border-radius: 3px; transition: width 0.5s linear; min-width: 6px; }
-  #timeline-thumb { position: absolute; top: 50%; transform: translate(-50%,-50%); width: 14px; height: 14px; background: var(--white); border-radius: 50%; box-shadow: 0 0 0 2px var(--red); transition: left 0.5s linear; pointer-events: none; }
-  #segment-progress { margin-top: 8px; }
-  #segment-labels { display: flex; justify-content: space-between; font-size: 10px; font-family: var(--font-mono); color: var(--grey); margin-bottom: 4px; padding: 0 2px; }
-  #segment-elapsed { color: var(--white); }
-  #segment-track { width: 100%; height: 3px; background: var(--surface2); border-radius: 2px; }
-  #segment-fill { height: 100%; background: var(--grey-dim); border-radius: 2px; transition: width 0.5s linear; }
+  /* NOW PLAYING */
+  #np{background:var(--surface);border-radius:10px;padding:14px 16px;flex-shrink:0;border-left:3px solid var(--red)}
+  #np-lbl{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--red);margin-bottom:4px}
+  #np-title{font-size:18px;font-weight:700;line-height:1.2;margin-bottom:6px;min-height:22px}
+  #np-meta{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--grey);font-family:var(--mono)}
+  #np-time{color:var(--white);font-weight:600}
 
-  #playlist-section { flex: 1; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
-  #playlist-header { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--grey); margin-bottom: 6px; flex-shrink: 0; }
-  #playlist { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 4px; scrollbar-width: none; }
-  #playlist::-webkit-scrollbar { display: none; }
-  .pl-item { background: var(--surface); border-radius: 8px; padding: 10px 12px; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: background 0.15s; flex-shrink: 0; border: 1px solid transparent; }
-  .pl-item:active { background: var(--surface2); }
-  .pl-item.active { background: var(--surface2); border-color: var(--red); }
-  .pl-item.played { opacity: 0.4; }
-  .pl-time { font-family: var(--font-mono); font-size: 12px; color: var(--grey); min-width: 40px; flex-shrink: 0; }
-  .pl-info { flex: 1; min-width: 0; }
-  .pl-name { font-size: 14px; font-weight: 600; color: var(--white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .pl-item.active .pl-name { color: var(--red); }
-  .pl-dur { font-size: 11px; font-family: var(--font-mono); color: var(--grey); margin-top: 2px; }
-  .pl-arrow { font-size: 16px; color: var(--grey-dim); flex-shrink: 0; }
-  .pl-item.active .pl-arrow { color: var(--red); }
+  /* TIMELINE */
+  #tl-wrap{flex-shrink:0}
+  #tl-labels{display:flex;justify-content:space-between;font-size:10px;font-family:var(--mono);color:var(--grey);margin-bottom:4px;padding:0 2px}
+  #tl-track{width:100%;height:6px;background:var(--surface2);border-radius:3px;position:relative;cursor:pointer}
+  #tl-fill{height:100%;background:var(--red);border-radius:3px;transition:width .5s linear;min-width:6px}
+  #tl-thumb{position:absolute;top:50%;transform:translate(-50%,-50%);width:14px;height:14px;background:var(--white);border-radius:50%;box-shadow:0 0 0 2px var(--red);transition:left .5s linear;pointer-events:none}
+  #seg-wrap{margin-top:8px}
+  #seg-labels{display:flex;justify-content:space-between;font-size:10px;font-family:var(--mono);color:var(--grey);margin-bottom:4px;padding:0 2px}
+  #seg-el{color:var(--white)}
+  #seg-track{width:100%;height:3px;background:var(--surface2);border-radius:2px}
+  #seg-fill{height:100%;background:var(--grey-dim);border-radius:2px;transition:width .5s linear}
 
-  #seek-section { flex-shrink: 0; }
-  #seek-row { display: flex; gap: 6px; align-items: center; }
-  .seek-group { display: flex; gap: 4px; flex: 1; }
-  .seek-btn { flex: 1; background: var(--surface); border: 1px solid var(--surface2); border-radius: 8px; color: var(--white); font-size: 12px; font-family: var(--font-mono); font-weight: 700; padding: 10px 2px; cursor: pointer; transition: background 0.1s, transform 0.1s; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1px; }
-  .seek-btn:active { background: var(--surface2); transform: scale(0.94); }
-  .seek-btn .arrow { font-size: 10px; color: var(--grey); }
-  .seek-btn .val { font-size: 13px; }
-  #seek-divider { width: 1px; height: 40px; background: var(--surface2); flex-shrink: 0; }
+  /* PLAYLIST */
+  #pl-sec{flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+  #pl-hdr{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--grey);margin-bottom:6px;flex-shrink:0}
+  #pl{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:4px;scrollbar-width:none}
+  #pl::-webkit-scrollbar{display:none}
+  .pi{background:var(--surface);border-radius:8px;padding:10px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:background .15s;flex-shrink:0;border:1px solid transparent}
+  .pi:active{background:var(--surface2)}
+  .pi.active{background:var(--surface2);border-color:var(--red)}
+  .pi.done{opacity:.4}
+  .pi-t{font-family:var(--mono);font-size:12px;color:var(--grey);min-width:40px;flex-shrink:0}
+  .pi-i{flex:1;min-width:0}
+  .pi-n{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pi.active .pi-n{color:var(--red)}
+  .pi-d{font-size:11px;font-family:var(--mono);color:var(--grey);margin-top:2px}
+  .pi-a{font-size:16px;color:var(--grey-dim);flex-shrink:0}
+  .pi.active .pi-a{color:var(--red)}
 
-  #controls { flex-shrink: 0; display: flex; align-items: center; gap: 10px; }
-  #btn-prev, #btn-next { flex: 1; background: var(--surface); border: none; border-radius: 10px; color: var(--white); font-size: 22px; padding: 14px; cursor: pointer; transition: background 0.15s; }
-  #btn-prev:active, #btn-next:active { background: var(--surface2); }
-  #btn-play { flex: 2; background: var(--red); border: none; border-radius: 14px; color: #fff; font-size: 28px; padding: 18px; cursor: pointer; transition: background 0.15s, transform 0.1s; box-shadow: 0 4px 20px rgba(228,0,26,0.35); }
-  #btn-play:active { transform: scale(0.95); }
-  #btn-play.loading { background: var(--red-dim); }
+  /* SEEK */
+  #sk-sec{flex-shrink:0}
+  #sk-row{display:flex;gap:6px;align-items:center}
+  .sk-g{display:flex;gap:4px;flex:1}
+  .sk{flex:1;background:var(--surface);border:1px solid var(--surface2);border-radius:8px;color:var(--white);font-size:12px;font-family:var(--mono);font-weight:700;padding:10px 2px;cursor:pointer;transition:background .1s,transform .1s;text-align:center;display:flex;flex-direction:column;align-items:center;gap:1px}
+  .sk:active{background:var(--surface2);transform:scale(.94)}
+  .sk .ar{font-size:10px;color:var(--grey)}
+  .sk .vl{font-size:13px}
+  #sk-div{width:1px;height:40px;background:var(--surface2);flex-shrink:0}
 
-  #offset-section { flex-shrink: 0; display: flex; align-items: center; gap: 8px; }
-  #offset-label { font-size: 11px; color: var(--grey); white-space: nowrap; flex-shrink: 0; }
-  #offset-select { flex: 1; background: var(--surface); border: 1px solid var(--surface2); border-radius: 8px; color: var(--white); font-size: 14px; padding: 8px 10px; appearance: none; -webkit-appearance: none; cursor: pointer; outline: none; text-align: center; }
-  #offset-select option { background: #222; }
-  #btn-reload { background: var(--surface); border: 1px solid var(--surface2); border-radius: 8px; color: var(--grey); font-size: 18px; padding: 8px 12px; cursor: pointer; transition: background 0.15s; flex-shrink: 0; }
-  #btn-reload:active { background: var(--surface2); color: var(--white); }
+  /* CONTROLS */
+  #ctrl{flex-shrink:0;display:flex;align-items:center;gap:10px}
+  #b-prev,#b-next{flex:1;background:var(--surface);border:none;border-radius:10px;color:var(--white);font-size:22px;padding:14px;cursor:pointer;transition:background .15s}
+  #b-prev:active,#b-next:active{background:var(--surface2)}
+  #b-play{flex:2;background:var(--red);border:none;border-radius:14px;color:#fff;font-size:28px;padding:18px;cursor:pointer;transition:background .15s,transform .1s;box-shadow:0 4px 20px rgba(228,0,26,.35)}
+  #b-play:active{transform:scale(.95)}
+  #b-play.dim{background:var(--red-dim)}
 
-  #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #333; color: var(--white); font-size: 13px; padding: 10px 18px; border-radius: 20px; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 100; white-space: nowrap; }
-  #toast.show { opacity: 1; }
-  #loading-overlay { position: fixed; inset: 0; background: rgba(10,10,10,0.88); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; z-index: 50; transition: opacity 0.3s; }
-  #loading-overlay.hidden { opacity: 0; pointer-events: none; }
-  #loading-spinner { width: 40px; height: 40px; border: 3px solid var(--surface2); border-top-color: var(--red); border-radius: 50%; animation: spin 0.8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  #loading-text { font-size: 14px; color: var(--grey); }
+  /* OFFSET */
+  #off-sec{flex-shrink:0;display:flex;align-items:center;gap:8px}
+  #off-lbl{font-size:11px;color:var(--grey);white-space:nowrap;flex-shrink:0}
+  #off-sel{flex:1;background:var(--surface);border:1px solid var(--surface2);border-radius:8px;color:var(--white);font-size:14px;padding:8px 10px;appearance:none;-webkit-appearance:none;cursor:pointer;outline:none;text-align:center}
+  #off-sel option{background:#222}
+  #b-reload{background:var(--surface);border:1px solid var(--surface2);border-radius:8px;color:var(--grey);font-size:18px;padding:8px 12px;cursor:pointer;transition:background .15s;flex-shrink:0}
+  #b-reload:active{background:var(--surface2);color:var(--white)}
+
+  /* TOAST / OVERLAY */
+  #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#333;color:var(--white);font-size:13px;padding:10px 18px;border-radius:20px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:100;white-space:nowrap}
+  #toast.show{opacity:1}
+  #ov{position:fixed;inset:0;background:rgba(10,10,10,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:50;transition:opacity .3s}
+  #ov.hidden{opacity:0;pointer-events:none}
+  #spin{width:40px;height:40px;border:3px solid var(--surface2);border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  #ov-txt{font-size:14px;color:var(--grey)}
 </style>
 </head>
 <body>
 <div id="app">
-  <div id="header">
-    <div id="logo">
-      <div id="logo-box">SRF</div>
-      <div id="logo-label">4 News</div>
-    </div>
-    <div id="status-dot"></div>
+  <div id="hdr">
+    <div id="logo"><div id="logo-box">SRF</div><div id="logo-lbl">4 News</div></div>
+    <div id="dot"></div>
   </div>
 
-  <div id="now-playing">
-    <div id="show-label">Läuft gerade</div>
-    <div id="show-title">Wird geladen…</div>
-    <div id="show-meta">
-      <span id="show-time">--:--</span>
-      <span>·</span>
-      <span id="show-duration">-- Min</span>
+  <div id="np">
+    <div id="np-lbl">Läuft gerade</div>
+    <div id="np-title">Wird geladen…</div>
+    <div id="np-meta"><span id="np-time">--:--</span><span>·</span><span id="np-dur">-- Min</span></div>
+  </div>
+
+  <div id="tl-wrap">
+    <div id="tl-labels"><span id="tl-s">−2h</span><span style="color:var(--grey)">jetzt</span></div>
+    <div id="tl-track" onclick="tlClick(event)">
+      <div id="tl-fill" style="width:0%"></div>
+      <div id="tl-thumb" style="left:0%"></div>
+    </div>
+    <div id="seg-wrap">
+      <div id="seg-labels"><span id="seg-el">0:00</span><span id="seg-re">0:00</span></div>
+      <div id="seg-track"><div id="seg-fill" style="width:0%"></div></div>
     </div>
   </div>
 
-  <div id="timeline-section">
-    <div id="timeline-labels">
-      <span id="tl-start">−2h</span>
-      <span style="color:var(--grey)">jetzt</span>
-    </div>
-    <div id="timeline-track" onclick="handleTimelineClick(event)">
-      <div id="timeline-fill" style="width:0%"></div>
-      <div id="timeline-thumb" style="left:0%"></div>
-    </div>
-    <div id="segment-progress">
-      <div id="segment-labels">
-        <span id="segment-elapsed">0:00</span>
-        <span id="segment-remaining">0:00</span>
+  <div id="pl-sec">
+    <div id="pl-hdr">Programm</div>
+    <div id="pl"></div>
+  </div>
+
+  <div id="sk-sec">
+    <div id="sk-row">
+      <div class="sk-g">
+        <button class="sk" onclick="seek(-600)"><span class="ar">◀</span><span class="vl">10m</span></button>
+        <button class="sk" onclick="seek(-180)"><span class="ar">◀</span><span class="vl">3m</span></button>
+        <button class="sk" onclick="seek(-60)"><span class="ar">◀</span><span class="vl">1m</span></button>
+        <button class="sk" onclick="seek(-15)"><span class="ar">◀</span><span class="vl">15s</span></button>
       </div>
-      <div id="segment-track"><div id="segment-fill" style="width:0%"></div></div>
-    </div>
-  </div>
-
-  <div id="playlist-section">
-    <div id="playlist-header">Programm</div>
-    <div id="playlist"></div>
-  </div>
-
-  <div id="seek-section">
-    <div id="seek-row">
-      <div class="seek-group">
-        <button class="seek-btn" onclick="seek(-600)"><span class="arrow">◀</span><span class="val">10m</span></button>
-        <button class="seek-btn" onclick="seek(-180)"><span class="arrow">◀</span><span class="val">3m</span></button>
-        <button class="seek-btn" onclick="seek(-60)"><span class="arrow">◀</span><span class="val">1m</span></button>
-        <button class="seek-btn" onclick="seek(-15)"><span class="arrow">◀</span><span class="val">15s</span></button>
-      </div>
-      <div id="seek-divider"></div>
-      <div class="seek-group">
-        <button class="seek-btn" onclick="seek(15)"><span class="val">15s</span><span class="arrow">▶</span></button>
-        <button class="seek-btn" onclick="seek(60)"><span class="val">1m</span><span class="arrow">▶</span></button>
-        <button class="seek-btn" onclick="seek(180)"><span class="val">3m</span><span class="arrow">▶</span></button>
-        <button class="seek-btn" onclick="seek(600)"><span class="val">10m</span><span class="arrow">▶</span></button>
+      <div id="sk-div"></div>
+      <div class="sk-g">
+        <button class="sk" onclick="seek(15)"><span class="vl">15s</span><span class="ar">▶</span></button>
+        <button class="sk" onclick="seek(60)"><span class="vl">1m</span><span class="ar">▶</span></button>
+        <button class="sk" onclick="seek(180)"><span class="vl">3m</span><span class="ar">▶</span></button>
+        <button class="sk" onclick="seek(600)"><span class="vl">10m</span><span class="ar">▶</span></button>
       </div>
     </div>
   </div>
 
-  <div id="controls">
-    <button id="btn-prev" onclick="prevShow()">⏮</button>
-    <button id="btn-play" onclick="togglePlay()">▶</button>
-    <button id="btn-next" onclick="nextShow()">⏭</button>
+  <div id="ctrl">
+    <button id="b-prev" onclick="prevEp()">⏮</button>
+    <button id="b-play" onclick="togglePlay()">▶</button>
+    <button id="b-next" onclick="nextEp()">⏭</button>
   </div>
 
-  <div id="offset-section">
-    <span id="offset-label">Start:</span>
-    <select id="offset-select" onchange="reloadWithOffset()">
+  <div id="off-sec">
+    <span id="off-lbl">Start:</span>
+    <select id="off-sel" onchange="reload()">
       <option value="30">30 Min zurück</option>
       <option value="60">1 Std zurück</option>
       <option value="120" selected>2 Std zurück</option>
@@ -181,396 +161,223 @@
       <option value="240">4 Std zurück</option>
       <option value="360">6 Std zurück</option>
     </select>
-    <button id="btn-reload" onclick="reloadWithOffset()">↺</button>
+    <button id="b-reload" onclick="reload()">↺</button>
   </div>
 </div>
 
-<div id="loading-overlay">
-  <div id="loading-spinner"></div>
-  <div id="loading-text">Programm wird geladen…</div>
-</div>
+<div id="ov"><div id="spin"></div><div id="ov-txt">Programm wird geladen…</div></div>
 <div id="toast"></div>
 <audio id="audio" preload="none"></audio>
 
 <script>
-// SRF 4 News Show-IDs (fest kodiert, öffentlich bekannt)
-// Wir laden die neuesten Episoden dieser Sendungen und filtern nach Zeitfenster
-const SHOWS = [
-  { id: 'bfffc6d6-58e8-4b34-8a35-9a3e43d5e7a2', name: 'SRF 4 News' },
-  { id: '8476fe5d-8f3b-4c54-9c73-c0eebc26f6c1', name: 'HeuteMorgen' },
-  { id: 'fd0de1c6-91a3-4b02-aae5-de83b7d85f2e', name: 'Rendez-vous' },
-  { id: 'c4cfb98c-7564-42a4-ae96-f8e11dde0cc0', name: 'Echo der Zeit' },
-  { id: '8f27b768-c8b0-4e2b-a3f4-9f5b6e2d1a8c', name: 'Heute Morgen' },
+// ── Echte SRF Podcast-Feed-IDs (aus den Seiten-Metadaten extrahiert) ──────────
+const FEEDS = [
+  { name:'HeuteMorgen',    id:'8476fe5d-8f3b-4c54-9c73-c0eebc26f6c1' },
+  { name:'SRF 4 News',     id:'b21f6047-4b8e-4f33-88cd-35ca62fbde48' },
+  { name:'Rendez-vous',    id:'f4a31dc3-9c69-4042-b680-d4fe4ccb8b25' },
+  { name:'Echo der Zeit',  id:'28549e81-c453-4671-92ad-cb28796d06a8' },
+  { name:'Tagesgespräch',  id:'c5f77c8c-22a6-41b3-9b0c-5da0d5069ac2' },
+  { name:'News Plus',      id:'a64f8181-5e72-4bd5-9ab6-4f3f8e3e9a1c' },
 ];
 
-const IL = 'https://il.srgssr.ch/integrationlayer/2.0/srf';
-const FALLBACK_STREAM = 'https://stream.srg-ssr.ch/srgssr/srf4news/aac/192';
+// CORS-Proxy (öffentlich, kein Key nötig)
+const PROXY = 'https://api.allorigins.win/raw?url=';
+const FALLBACK = 'https://stream.srg-ssr.ch/srgssr/srf4news/aac/192';
 
-let episodes = [];
-let currentIdx = 0;
-let isPlaying = false;
-let windowStartMs = 0;
-let windowEndMs = 0;
-let tickInterval = null;
-
+let eps = [], curIdx = 0, playing = false, winStart = 0, winEnd = 0, tick = null;
 const audio = document.getElementById('audio');
 
-window.addEventListener('load', loadProgram);
+window.addEventListener('load', init);
 
-async function loadProgram() {
-  showLoading('Programm wird geladen…');
-  const offsetMin = parseInt(document.getElementById('offset-select').value) || 120;
-  windowEndMs = Date.now();
-  windowStartMs = windowEndMs - offsetMin * 60 * 1000;
-  document.getElementById('tl-start').textContent = offsetMin >= 60 ? `−${offsetMin/60}h` : `−${offsetMin}m`;
+async function init() {
+  showOv('Programm wird geladen…');
+  const mins = parseInt(document.getElementById('off-sel').value) || 120;
+  winEnd = Date.now();
+  winStart = winEnd - mins * 60000;
+  document.getElementById('tl-s').textContent = mins >= 60 ? `−${mins/60}h` : `−${mins}m`;
 
   try {
-    episodes = await fetchAllEpisodes(windowStartMs, windowEndMs);
-    if (episodes.length === 0) throw new Error('Keine Episoden im Zeitfenster');
-    renderPlaylist();
-    await loadEpisode(0, 0);
-    hideLoading();
+    eps = await loadFeeds(winStart, winEnd);
+    if (!eps.length) throw new Error('leer');
+    render();
+    await loadEp(0, 0);
+    hideOv();
   } catch(e) {
     console.warn('Fehler:', e);
-    useFallback(offsetMin);
+    fallback(mins);
   }
 }
 
-async function fetchAllEpisodes(fromMs, toMs) {
-  // Methode 1: Direkt nach Audio-Episoden des Kanals suchen
-  // Kanal-URN für SRF 4 News
-  const channelUrn = 'urn:srf:channel:radio:69e8ac16-4327-4af4-b873-fd5cd6e895a7';
-  
-  // Versuche die neuesten Episoden des Kanals zu holen
-  const url = `${IL}/latestEpisodesByChannel/byChannelUrn/${channelUrn}?numberOfEpisodes=30&vector=portalplay`;
-  
-  let resp;
-  try {
-    resp = await fetch(url);
-  } catch(e) {
-    throw new Error('Netzwerkfehler');
-  }
-
-  if (!resp.ok) {
-    // Fallback: versuche bekannte Show-IDs
-    return fetchByShowIds(fromMs, toMs);
-  }
-
-  const data = await resp.json();
-  const list = data?.episodeList ?? data?.episodes ?? data?.data ?? [];
-  
-  if (list.length === 0) return fetchByShowIds(fromMs, toMs);
-
-  return processEpisodeList(list, fromMs, toMs);
-}
-
-async function fetchByShowIds(fromMs, toMs) {
-  const allEps = [];
-  
-  // Bekannte SRF 4 News Sendungen direkt abfragen
-  const knownShows = [
-    'c4cfb98c-7564-42a4-ae96-f8e11dde0cc0', // Echo der Zeit
-    '8476fe5d-8f3b-4c54-9c73-c0eebc26f6c1', // HeuteMorgen  
-    'fd0de1c6-91a3-4b02-aae5-de83b7d85f2e', // Rendez-vous
-  ];
-
-  for (const showId of knownShows) {
+// ── RSS FEEDS ─────────────────────────────────────────────────────────────────
+async function loadFeeds(from, to) {
+  const all = [];
+  await Promise.allSettled(FEEDS.map(async f => {
     try {
-      const url = `${IL}/episodeComposition/latestEpisodesByShow/byShowId/${showId}?numberOfEpisodes=5&vector=portalplay`;
-      const r = await fetch(url);
-      if (!r.ok) continue;
-      const d = await r.json();
-      const eps = d?.episodeList ?? [];
-      allEps.push(...eps);
+      const url = `https://www.srf.ch/feed/podcast/sd/${f.id}.xml`;
+      const r = await fetch(PROXY + encodeURIComponent(url));
+      if (!r.ok) return;
+      const txt = await r.text();
+      const items = parseRSS(txt, f.name);
+      all.push(...items);
     } catch(e) { /* skip */ }
-  }
+  }));
 
-  // Auch nach "SRF 4 News" im Audios-Suchendpunkt suchen
-  try {
-    const searchUrl = `${IL}/audios/byChannel/id/69e8ac16-4327-4af4-b873-fd5cd6e895a7?numberOfAudios=20&vector=portalplay`;
-    const r = await fetch(searchUrl);
-    if (r.ok) {
-      const d = await r.json();
-      const eps = d?.audioList ?? d?.episodes ?? [];
-      allEps.push(...eps);
-    }
-  } catch(e) { /* skip */ }
+  // Filter nach Zeitfenster
+  const filtered = all
+    .filter(e => e.audioUrl && e.pubMs > 0)
+    .filter(e => e.pubMs <= to && (e.pubMs + e.duration*1000) >= from)
+    .sort((a,b) => a.pubMs - b.pubMs);
 
-  if (allEps.length === 0) throw new Error('Keine Sendungen gefunden');
-  return processEpisodeList(allEps, fromMs, toMs);
-}
-
-function processEpisodeList(list, fromMs, toMs) {
-  const eps = list.map(ep => {
-    // Zeitstempel ermitteln
-    const pubDate = ep.publishedDate || ep.date || ep.broadcastDate;
-    const startMs = pubDate ? new Date(pubDate).getTime() : 0;
-    
-    // Dauer
-    const dur = (ep.duration || ep.chapterList?.[0]?.duration || 0) / 1000;
-    const endMs = startMs + dur * 1000;
-
-    // Titel
-    const title = ep.title || ep.chapterList?.[0]?.title || 'Sendung';
-
-    // Audio-URL aus resourceList
-    const chapter = ep.chapterList?.[0];
-    const resource = chapter?.resourceList?.find(r =>
-      !r.drmProtected && (r.mimeType?.includes('audio') || r.protocol === 'HLS' ||
-      r.url?.includes('.mp3') || r.url?.includes('.aac') || r.url?.includes('m3u8'))
-    ) || chapter?.resourceList?.[0];
-
-    return {
-      title,
-      startMs,
-      endMs,
-      duration: dur,
-      audioUrl: resource?.url || null,
-      urn: ep.urn || chapter?.urn
-    };
-  })
-  .filter(ep => ep.audioUrl && ep.startMs > 0)
-  .filter(ep => ep.endMs >= fromMs && ep.startMs <= toMs)
-  .sort((a, b) => a.startMs - b.startMs);
-
-  // Duplikate entfernen
+  // Duplikate raus
   const seen = new Set();
-  return eps.filter(ep => {
-    const key = ep.urn || ep.audioUrl;
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
+  return filtered.filter(e => {
+    if (seen.has(e.audioUrl)) return false;
+    seen.add(e.audioUrl); return true;
   });
 }
 
-async function resolveAudioUrl(ep) {
-  if (ep.audioUrl) return ep.audioUrl;
-  if (!ep.urn) return null;
-  try {
-    const url = `https://il.srgssr.ch/integrationlayer/2.0/mediaComposition/byUrn/${ep.urn}.json?onlyChapters=true&vector=portalplay`;
-    const r = await fetch(url);
-    if (!r.ok) return null;
-    const d = await r.json();
-    const chapter = d?.chapterList?.[0];
-    const resource = chapter?.resourceList?.find(r => !r.drmProtected) || chapter?.resourceList?.[0];
-    ep.audioUrl = resource?.url || null;
-    return ep.audioUrl;
-  } catch(e) { return null; }
+function parseRSS(xml, showName) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(xml, 'text/xml');
+  const items = [...doc.querySelectorAll('item')];
+  return items.map(it => {
+    const title = it.querySelector('title')?.textContent?.trim() || showName;
+    const pubDate = it.querySelector('pubDate')?.textContent?.trim();
+    const pubMs = pubDate ? new Date(pubDate).getTime() : 0;
+    const enclosure = it.querySelector('enclosure');
+    const audioUrl = enclosure?.getAttribute('url') || '';
+    const durStr = it.querySelector('duration')?.textContent?.trim() || '0';
+    const duration = parseDur(durStr);
+    return { title, pubMs, duration, audioUrl, show: showName };
+  }).filter(e => e.audioUrl && e.pubMs > 0);
 }
 
-function useFallback(offsetMin) {
-  episodes = [{
-    title: 'SRF 4 News Live',
-    startMs: windowStartMs,
-    endMs: windowEndMs,
-    duration: offsetMin * 60,
-    audioUrl: FALLBACK_STREAM,
-    urn: null
-  }];
-  renderPlaylist();
-  audio.src = FALLBACK_STREAM;
-  hideLoading();
-  showToast('On-Demand nicht verfügbar – Live-Stream');
+function parseDur(s) {
+  if (!s) return 0;
+  const p = s.split(':').map(Number);
+  if (p.length === 3) return p[0]*3600 + p[1]*60 + p[2];
+  if (p.length === 2) return p[0]*60 + p[1];
+  return parseInt(s) || 0;
 }
 
-// ── PLAYBACK ─────────────────────────────────────────
-async function loadEpisode(idx, seekSec) {
-  if (idx < 0 || idx >= episodes.length) return;
-  currentIdx = idx;
-  const ep = episodes[idx];
+function fallback(mins) {
+  eps = [{ title:'SRF 4 News Live', pubMs:winStart, duration:mins*60, audioUrl:FALLBACK, show:'Live' }];
+  render();
+  audio.src = FALLBACK;
+  hideOv();
+  toast('Feeds nicht verfügbar – Live-Stream');
+}
 
+// ── PLAYBACK ──────────────────────────────────────────────────────────────────
+async function loadEp(idx, seekSec) {
+  if (idx < 0 || idx >= eps.length) return;
+  curIdx = idx;
+  const ep = eps[idx];
   setDot('loading');
-  document.getElementById('show-title').textContent = ep.title;
-  document.getElementById('show-time').textContent = fmtTime(ep.startMs);
-  document.getElementById('show-duration').textContent = ep.duration > 0 ? `${Math.round(ep.duration/60)} Min` : '?';
-  renderPlaylist();
-
-  const url = await resolveAudioUrl(ep);
-  if (!url) {
-    showToast('Audio nicht verfügbar');
-    if (idx + 1 < episodes.length) { loadEpisode(idx+1, 0); }
-    return;
-  }
-
-  audio.src = url;
-  if (seekSec > 0) audio.currentTime = seekSec;
-  if (isPlaying) audio.play().catch(()=>{});
+  document.getElementById('np-title').textContent = ep.title;
+  document.getElementById('np-time').textContent = fmt(ep.pubMs);
+  document.getElementById('np-dur').textContent = ep.duration > 0 ? `${Math.round(ep.duration/60)} Min` : '?';
+  render();
+  audio.src = ep.audioUrl;
+  if (seekSec > 0) { audio.addEventListener('canplay', ()=>{ audio.currentTime=seekSec; }, {once:true}); }
+  if (playing) audio.play().catch(()=>{});
   startTick();
 }
 
 async function togglePlay() {
   if (audio.paused) {
     setDot('loading');
-    try {
-      await audio.play();
-      isPlaying = true;
-      document.getElementById('btn-play').textContent = '⏸';
-      setDot('playing');
-    } catch(e) {
-      showToast('Wiedergabe fehlgeschlagen');
-      setDot('idle');
-    }
+    try { await audio.play(); playing=true; document.getElementById('b-play').textContent='⏸'; setDot('on'); }
+    catch(e) { toast('Wiedergabe fehlgeschlagen'); setDot(''); }
   } else {
-    audio.pause();
-    isPlaying = false;
-    document.getElementById('btn-play').textContent = '▶';
-    setDot('idle');
+    audio.pause(); playing=false; document.getElementById('b-play').textContent='▶'; setDot('');
   }
 }
 
-function seek(deltaSec) {
-  if (!episodes.length) return;
-  const ep = episodes[currentIdx];
+function seek(d) {
+  if (!eps.length) return;
+  const ep = eps[curIdx];
   const dur = audio.duration || ep.duration || 999999;
-  const newTime = (audio.currentTime || 0) + deltaSec;
-
-  if (newTime >= 0 && newTime <= dur) {
-    audio.currentTime = Math.max(0, newTime);
-    showToast(`${deltaSec > 0 ? '+' : ''}${deltaSec}s`);
-    return;
-  }
-  if (newTime < 0 && currentIdx > 0) {
-    const prev = episodes[currentIdx-1];
-    const seekIn = Math.max(0, (prev.duration||0) + newTime);
-    loadEpisode(currentIdx-1, seekIn);
-    if (isPlaying) audio.play().catch(()=>{});
-    showToast('← Vorherige Sendung');
-  } else if (newTime > dur && currentIdx+1 < episodes.length) {
-    loadEpisode(currentIdx+1, 0);
-    if (isPlaying) audio.play().catch(()=>{});
-    showToast('Nächste Sendung →');
-  } else if (newTime < 0) {
-    audio.currentTime = 0;
-  }
+  const t = (audio.currentTime||0) + d;
+  if (t >= 0 && t <= dur) { audio.currentTime = Math.max(0,t); toast(`${d>0?'+':''}${d}s`); return; }
+  if (t < 0 && curIdx > 0) {
+    const prev = eps[curIdx-1];
+    loadEp(curIdx-1, Math.max(0,(prev.duration||0)+t));
+    if(playing) audio.play().catch(()=>{});
+    toast('← Vorherige');
+  } else if (t > dur && curIdx+1 < eps.length) {
+    loadEp(curIdx+1, 0); if(playing) audio.play().catch(()=>{}); toast('Nächste →');
+  } else if (t < 0) { audio.currentTime = 0; }
 }
 
-function prevShow() {
-  if (currentIdx > 0) { loadEpisode(currentIdx-1, 0); if(isPlaying) audio.play().catch(()=>{}); }
-  else audio.currentTime = 0;
-}
+function prevEp() { if(curIdx>0){loadEp(curIdx-1,0);if(playing)audio.play().catch(()=>{})} else audio.currentTime=0; }
+function nextEp() { if(curIdx+1<eps.length){loadEp(curIdx+1,0);if(playing)audio.play().catch(()=>{});} }
 
-function nextShow() {
-  if (currentIdx+1 < episodes.length) { loadEpisode(currentIdx+1, 0); if(isPlaying) audio.play().catch(()=>{}); }
-}
-
-// ── PROGRESS ─────────────────────────────────────────
+// ── PROGRESS ──────────────────────────────────────────────────────────────────
 function startTick() {
-  if (tickInterval) clearInterval(tickInterval);
-  tickInterval = setInterval(updateProgress, 1000);
-  updateProgress();
+  if(tick) clearInterval(tick);
+  tick = setInterval(updateProg, 1000);
+  updateProg();
 }
 
-function updateProgress() {
-  if (!episodes.length) return;
-  const ep = episodes[currentIdx];
-  const cur = audio.currentTime || 0;
-  const dur = audio.duration || ep.duration || 1;
-
-  // Segment bar
-  document.getElementById('segment-fill').style.width = Math.min(100,(cur/dur)*100) + '%';
-  document.getElementById('segment-elapsed').textContent = fmtDur(cur);
-  document.getElementById('segment-remaining').textContent = '−' + fmtDur(Math.max(0, dur-cur));
-
-  // Timeline
-  const winLen = windowEndMs - windowStartMs || 1;
-  const epOff = ep.startMs - windowStartMs;
-  const epLenPct = (ep.duration * 1000 / winLen) * 100;
-  const epStartPct = (epOff / winLen) * 100;
-  const pct = Math.min(99, Math.max(0, epStartPct + (cur/Math.max(dur,1)) * epLenPct));
-  document.getElementById('timeline-fill').style.width = pct + '%';
-  document.getElementById('timeline-thumb').style.left = pct + '%';
-
-  if (!audio.paused) setDot('playing');
+function updateProg() {
+  if (!eps.length) return;
+  const ep = eps[curIdx];
+  const cur = audio.currentTime||0;
+  const dur = audio.duration||ep.duration||1;
+  document.getElementById('seg-fill').style.width = Math.min(100,(cur/dur)*100)+'%';
+  document.getElementById('seg-el').textContent = fmtD(cur);
+  document.getElementById('seg-re').textContent = '−'+fmtD(Math.max(0,dur-cur));
+  const winLen = winEnd-winStart||1;
+  const pct = Math.min(99,Math.max(0, ((ep.pubMs-winStart)/winLen + (cur/Math.max(dur,1))*(ep.duration*1000/winLen))*100));
+  document.getElementById('tl-fill').style.width = pct+'%';
+  document.getElementById('tl-thumb').style.left = pct+'%';
+  if(!audio.paused) setDot('on');
 }
 
-audio.addEventListener('ended', () => {
-  if (currentIdx+1 < episodes.length) { loadEpisode(currentIdx+1,0); audio.play().catch(()=>{}); }
-  else { isPlaying=false; document.getElementById('btn-play').textContent='▶'; setDot('idle'); showToast('Playlist beendet'); }
+audio.addEventListener('ended',()=>{
+  if(curIdx+1<eps.length){loadEp(curIdx+1,0);audio.play().catch(()=>{});}
+  else{playing=false;document.getElementById('b-play').textContent='▶';setDot('');toast('Ende');}
 });
-audio.addEventListener('playing', () => {
-  isPlaying=true; document.getElementById('btn-play').textContent='⏸';
-  document.getElementById('btn-play').classList.remove('loading'); setDot('playing');
-});
-audio.addEventListener('waiting', () => { setDot('loading'); document.getElementById('btn-play').classList.add('loading'); });
-audio.addEventListener('canplay', () => { document.getElementById('btn-play').classList.remove('loading'); });
+audio.addEventListener('playing',()=>{ playing=true; document.getElementById('b-play').textContent='⏸'; document.getElementById('b-play').classList.remove('dim'); setDot('on'); });
+audio.addEventListener('waiting',()=>{ setDot('loading'); document.getElementById('b-play').classList.add('dim'); });
+audio.addEventListener('canplay',()=>{ document.getElementById('b-play').classList.remove('dim'); });
 
-function handleTimelineClick(e) {
-  const rect = e.currentTarget.getBoundingClientRect();
-  const pct = (e.clientX - rect.left) / rect.width;
-  const targetMs = windowStartMs + pct * (windowEndMs - windowStartMs);
-  let found = episodes.findIndex((ep,i) => {
-    const next = episodes[i+1]?.startMs ?? windowEndMs;
-    return targetMs >= ep.startMs && targetMs < next;
-  });
-  if (found < 0) found = 0;
-  const seekIn = Math.max(0, (targetMs - episodes[found].startMs)/1000);
-  loadEpisode(found, seekIn);
-  if (isPlaying) audio.play().catch(()=>{});
+function tlClick(e) {
+  const r = e.currentTarget.getBoundingClientRect();
+  const pct = (e.clientX-r.left)/r.width;
+  const tMs = winStart + pct*(winEnd-winStart);
+  let found = eps.findIndex((ep,i)=>{ const next=eps[i+1]?.pubMs??winEnd; return tMs>=ep.pubMs&&tMs<next; });
+  if(found<0) found=0;
+  loadEp(found, Math.max(0,(tMs-eps[found].pubMs)/1000));
+  if(playing) audio.play().catch(()=>{});
 }
 
-// ── RENDER ────────────────────────────────────────────
-function renderPlaylist() {
-  const c = document.getElementById('playlist');
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function render() {
+  const c = document.getElementById('pl');
   c.innerHTML = '';
-  if (episodes.length === 0) {
-    c.innerHTML = '<div style="color:var(--grey);font-size:13px;padding:12px">Keine Sendungen gefunden</div>';
-    return;
-  }
-  episodes.forEach((ep, i) => {
-    const div = document.createElement('div');
-    div.className = 'pl-item' + (i===currentIdx?' active':'') + (i<currentIdx?' played':'');
-    div.innerHTML = `
-      <span class="pl-time">${fmtTime(ep.startMs)}</span>
-      <div class="pl-info">
-        <div class="pl-name">${ep.title}</div>
-        <div class="pl-dur">${ep.duration>0?fmtDur(ep.duration):'?'}</div>
-      </div>
-      <span class="pl-arrow">${i===currentIdx?'▶':'›'}</span>`;
-    div.addEventListener('click', () => { loadEpisode(i,0); if(isPlaying) audio.play().catch(()=>{}); });
-    c.appendChild(div);
+  if (!eps.length) { c.innerHTML='<div style="color:var(--grey);font-size:13px;padding:12px">Keine Sendungen gefunden</div>'; return; }
+  eps.forEach((ep,i)=>{
+    const d = document.createElement('div');
+    d.className='pi'+(i===curIdx?' active':'')+(i<curIdx?' done':'');
+    d.innerHTML=`<span class="pi-t">${fmt(ep.pubMs)}</span><div class="pi-i"><div class="pi-n">${ep.title}</div><div class="pi-d">${ep.duration>0?fmtD(ep.duration):'?'}</div></div><span class="pi-a">${i===curIdx?'▶':'›'}</span>`;
+    d.addEventListener('click',()=>{loadEp(i,0);if(playing)audio.play().catch(()=>{});});
+    c.appendChild(d);
   });
-  setTimeout(() => {
-    const a = c.querySelector('.active');
-    if (a) a.scrollIntoView({block:'nearest',behavior:'smooth'});
-  }, 100);
+  setTimeout(()=>{ const a=c.querySelector('.active'); if(a) a.scrollIntoView({block:'nearest',behavior:'smooth'}); },100);
 }
 
-function reloadWithOffset() {
-  if (isPlaying) { audio.pause(); isPlaying=false; }
-  document.getElementById('btn-play').textContent='▶';
-  setDot('idle');
-  loadProgram();
-}
+function reload() { if(playing){audio.pause();playing=false;} document.getElementById('b-play').textContent='▶'; setDot(''); init(); }
 
-// ── HELPERS ───────────────────────────────────────────
-function fmtTime(ms) {
-  if (!ms) return '--:--';
-  const d = new Date(ms);
-  return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
-}
-function fmtDur(sec) {
-  if (!sec || isNaN(sec)) return '0:00';
-  const m = Math.floor(sec/60), s = Math.floor(sec%60);
-  return m + ':' + s.toString().padStart(2,'0');
-}
-function setDot(state) {
-  const d = document.getElementById('status-dot');
-  d.className = '';
-  if (state==='playing') d.classList.add('playing');
-  else if (state==='loading') d.classList.add('loading');
-}
-function showLoading(msg) {
-  document.getElementById('loading-text').textContent = msg||'Lädt…';
-  document.getElementById('loading-overlay').classList.remove('hidden');
-}
-function hideLoading() { document.getElementById('loading-overlay').classList.add('hidden'); }
-let toastTimer;
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>t.classList.remove('show'), 2000);
-}
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function fmt(ms){ if(!ms) return '--:--'; const d=new Date(ms); return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0'); }
+function fmtD(s){ if(!s||isNaN(s)) return '0:00'; return Math.floor(s/60)+':'+Math.floor(s%60).toString().padStart(2,'0'); }
+function setDot(s){ const d=document.getElementById('dot'); d.className=''; if(s) d.classList.add(s); }
+function showOv(m){ document.getElementById('ov-txt').textContent=m||'Lädt…'; document.getElementById('ov').classList.remove('hidden'); }
+function hideOv(){ document.getElementById('ov').classList.add('hidden'); }
+let toastT;
+function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2000); }
 </script>
 </body>
 </html>
