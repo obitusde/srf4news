@@ -18,454 +18,94 @@
     --font-mono: 'SF Mono', 'Fira Code', 'Courier New', monospace;
     --font-sans: -apple-system, 'Helvetica Neue', Arial, sans-serif;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
   html, body {
-    background: var(--bg);
-    color: var(--white);
-    font-family: var(--font-sans);
-    height: 100%;
-    overflow: hidden;
-    user-select: none;
+    background: var(--bg); color: var(--white);
+    font-family: var(--font-sans); height: 100%; overflow: hidden; user-select: none;
   }
-
-  /* ── LAYOUT ─────────────────────────────────────── */
   #app {
-    display: flex;
-    flex-direction: column;
-    height: 100dvh;
-    max-width: 480px;
-    margin: 0 auto;
-    padding: 12px 12px 8px;
-    gap: 10px;
+    display: flex; flex-direction: column; height: 100dvh;
+    max-width: 480px; margin: 0 auto; padding: 12px 12px 8px; gap: 10px;
   }
-
-  /* ── HEADER ─────────────────────────────────────── */
-  #header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-shrink: 0;
-  }
-
-  #logo {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  #logo-box {
-    background: var(--red);
-    color: #fff;
-    font-weight: 900;
-    font-size: 13px;
-    letter-spacing: 0.5px;
-    padding: 3px 6px;
-    border-radius: 3px;
-  }
-
-  #logo-label {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--grey);
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-  }
-
-  #status-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--grey-dim);
-    transition: background 0.3s;
-  }
-  #status-dot.playing { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  #header { display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  #logo { display: flex; align-items: center; gap: 8px; }
+  #logo-box { background: var(--red); color: #fff; font-weight: 900; font-size: 13px; padding: 3px 7px; border-radius: 3px; }
+  #logo-label { font-size: 13px; font-weight: 600; color: var(--grey); letter-spacing: 0.5px; text-transform: uppercase; }
+  #status-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--grey-dim); transition: background 0.3s; }
+  #status-dot.playing { background: var(--green); box-shadow: 0 0 7px var(--green); }
   #status-dot.loading { background: var(--red); animation: pulse 1s infinite; }
-
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-  /* ── NOW PLAYING ────────────────────────────────── */
   #now-playing {
-    background: var(--surface);
-    border-radius: 10px;
-    padding: 14px 16px;
-    flex-shrink: 0;
-    border-left: 3px solid var(--red);
+    background: var(--surface); border-radius: 10px; padding: 14px 16px;
+    flex-shrink: 0; border-left: 3px solid var(--red);
   }
-
-  #show-label {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--red);
-    margin-bottom: 4px;
-  }
-
-  #show-title {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--white);
-    line-height: 1.2;
-    margin-bottom: 6px;
-    min-height: 22px;
-  }
-
-  #show-meta {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
-    color: var(--grey);
-    font-family: var(--font-mono);
-  }
-
+  #show-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--red); margin-bottom: 4px; }
+  #show-title { font-size: 18px; font-weight: 700; color: var(--white); line-height: 1.2; margin-bottom: 6px; min-height: 22px; }
+  #show-meta { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--grey); font-family: var(--font-mono); }
   #show-time { color: var(--white); font-weight: 600; }
-  #show-duration { color: var(--grey); }
 
-  /* ── TIMELINE BAR ───────────────────────────────── */
-  #timeline-section {
-    flex-shrink: 0;
-  }
-
-  #timeline-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 10px;
-    font-family: var(--font-mono);
-    color: var(--grey);
-    margin-bottom: 4px;
-    padding: 0 2px;
-  }
-
-  #timeline-track {
-    width: 100%;
-    height: 6px;
-    background: var(--surface2);
-    border-radius: 3px;
-    position: relative;
-    cursor: pointer;
-  }
-
-  #timeline-fill {
-    height: 100%;
-    background: var(--red);
-    border-radius: 3px;
-    transition: width 0.5s linear;
-    min-width: 6px;
-  }
-
-  #timeline-thumb {
-    position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 14px; height: 14px;
-    background: var(--white);
-    border-radius: 50%;
-    box-shadow: 0 0 0 2px var(--red);
-    transition: left 0.5s linear;
-    pointer-events: none;
-  }
-
-  /* ── SEGMENT PROGRESS ───────────────────────────── */
-  #segment-progress {
-    margin-top: 8px;
-  }
-
-  #segment-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 10px;
-    font-family: var(--font-mono);
-    color: var(--grey);
-    margin-bottom: 4px;
-    padding: 0 2px;
-  }
-
+  #timeline-section { flex-shrink: 0; }
+  #timeline-labels { display: flex; justify-content: space-between; font-size: 10px; font-family: var(--font-mono); color: var(--grey); margin-bottom: 4px; padding: 0 2px; }
+  #timeline-track { width: 100%; height: 6px; background: var(--surface2); border-radius: 3px; position: relative; cursor: pointer; }
+  #timeline-fill { height: 100%; background: var(--red); border-radius: 3px; transition: width 0.5s linear; min-width: 6px; }
+  #timeline-thumb { position: absolute; top: 50%; transform: translate(-50%,-50%); width: 14px; height: 14px; background: var(--white); border-radius: 50%; box-shadow: 0 0 0 2px var(--red); transition: left 0.5s linear; pointer-events: none; }
+  #segment-progress { margin-top: 8px; }
+  #segment-labels { display: flex; justify-content: space-between; font-size: 10px; font-family: var(--font-mono); color: var(--grey); margin-bottom: 4px; padding: 0 2px; }
   #segment-elapsed { color: var(--white); }
+  #segment-track { width: 100%; height: 3px; background: var(--surface2); border-radius: 2px; }
+  #segment-fill { height: 100%; background: var(--grey-dim); border-radius: 2px; transition: width 0.5s linear; }
 
-  #segment-track {
-    width: 100%;
-    height: 3px;
-    background: var(--surface2);
-    border-radius: 2px;
-  }
-
-  #segment-fill {
-    height: 100%;
-    background: var(--grey-dim);
-    border-radius: 2px;
-    transition: width 0.5s linear;
-  }
-
-  /* ── PLAYLIST ───────────────────────────────────── */
-  #playlist-section {
-    flex: 1;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-  }
-
-  #playlist-header {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--grey);
-    margin-bottom: 6px;
-    flex-shrink: 0;
-  }
-
-  #playlist {
-    flex: 1;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    scrollbar-width: none;
-  }
+  #playlist-section { flex: 1; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
+  #playlist-header { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--grey); margin-bottom: 6px; flex-shrink: 0; }
+  #playlist { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 4px; scrollbar-width: none; }
   #playlist::-webkit-scrollbar { display: none; }
-
-  .pl-item {
-    background: var(--surface);
-    border-radius: 8px;
-    padding: 10px 12px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    transition: background 0.15s;
-    flex-shrink: 0;
-    border: 1px solid transparent;
-  }
+  .pl-item { background: var(--surface); border-radius: 8px; padding: 10px 12px; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: background 0.15s; flex-shrink: 0; border: 1px solid transparent; }
   .pl-item:active { background: var(--surface2); }
-  .pl-item.active {
-    background: var(--surface2);
-    border-color: var(--red);
-  }
-  .pl-item.played { opacity: 0.45; }
-
-  .pl-time {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: var(--grey);
-    min-width: 40px;
-    flex-shrink: 0;
-  }
-
+  .pl-item.active { background: var(--surface2); border-color: var(--red); }
+  .pl-item.played { opacity: 0.4; }
+  .pl-time { font-family: var(--font-mono); font-size: 12px; color: var(--grey); min-width: 40px; flex-shrink: 0; }
   .pl-info { flex: 1; min-width: 0; }
-
-  .pl-name {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--white);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+  .pl-name { font-size: 14px; font-weight: 600; color: var(--white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .pl-item.active .pl-name { color: var(--red); }
-
-  .pl-dur {
-    font-size: 11px;
-    font-family: var(--font-mono);
-    color: var(--grey);
-    margin-top: 2px;
-  }
-
-  .pl-arrow {
-    font-size: 16px;
-    color: var(--grey-dim);
-    flex-shrink: 0;
-  }
+  .pl-dur { font-size: 11px; font-family: var(--font-mono); color: var(--grey); margin-top: 2px; }
+  .pl-arrow { font-size: 16px; color: var(--grey-dim); flex-shrink: 0; }
   .pl-item.active .pl-arrow { color: var(--red); }
 
-  /* ── SEEK BUTTONS ───────────────────────────────── */
-  #seek-section {
-    flex-shrink: 0;
-  }
-
-  #seek-row {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-  }
-
-  .seek-group {
-    display: flex;
-    gap: 4px;
-    flex: 1;
-  }
-
-  .seek-btn {
-    flex: 1;
-    background: var(--surface);
-    border: 1px solid var(--surface2);
-    border-radius: 8px;
-    color: var(--white);
-    font-size: 12px;
-    font-family: var(--font-mono);
-    font-weight: 700;
-    padding: 10px 2px;
-    cursor: pointer;
-    transition: background 0.1s, transform 0.1s;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1px;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .seek-btn:active {
-    background: var(--surface2);
-    transform: scale(0.94);
-  }
-
+  #seek-section { flex-shrink: 0; }
+  #seek-row { display: flex; gap: 6px; align-items: center; }
+  .seek-group { display: flex; gap: 4px; flex: 1; }
+  .seek-btn { flex: 1; background: var(--surface); border: 1px solid var(--surface2); border-radius: 8px; color: var(--white); font-size: 12px; font-family: var(--font-mono); font-weight: 700; padding: 10px 2px; cursor: pointer; transition: background 0.1s, transform 0.1s; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1px; }
+  .seek-btn:active { background: var(--surface2); transform: scale(0.94); }
   .seek-btn .arrow { font-size: 10px; color: var(--grey); }
   .seek-btn .val { font-size: 13px; }
+  #seek-divider { width: 1px; height: 40px; background: var(--surface2); flex-shrink: 0; }
 
-  #seek-divider {
-    width: 1px;
-    height: 40px;
-    background: var(--surface2);
-    flex-shrink: 0;
-  }
-
-  /* ── CONTROLS ───────────────────────────────────── */
-  #controls {
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  #btn-prev, #btn-next {
-    flex: 1;
-    background: var(--surface);
-    border: none;
-    border-radius: 10px;
-    color: var(--white);
-    font-size: 22px;
-    padding: 14px;
-    cursor: pointer;
-    transition: background 0.15s;
-    -webkit-tap-highlight-color: transparent;
-  }
+  #controls { flex-shrink: 0; display: flex; align-items: center; gap: 10px; }
+  #btn-prev, #btn-next { flex: 1; background: var(--surface); border: none; border-radius: 10px; color: var(--white); font-size: 22px; padding: 14px; cursor: pointer; transition: background 0.15s; }
   #btn-prev:active, #btn-next:active { background: var(--surface2); }
-
-  #btn-play {
-    flex: 2;
-    background: var(--red);
-    border: none;
-    border-radius: 14px;
-    color: #fff;
-    font-size: 28px;
-    padding: 18px;
-    cursor: pointer;
-    transition: background 0.15s, transform 0.1s;
-    box-shadow: 0 4px 20px rgba(228,0,26,0.35);
-    -webkit-tap-highlight-color: transparent;
-  }
+  #btn-play { flex: 2; background: var(--red); border: none; border-radius: 14px; color: #fff; font-size: 28px; padding: 18px; cursor: pointer; transition: background 0.15s, transform 0.1s; box-shadow: 0 4px 20px rgba(228,0,26,0.35); }
   #btn-play:active { transform: scale(0.95); }
   #btn-play.loading { background: var(--red-dim); }
 
-  /* ── OFFSET SELECTOR ─────────────────────────────── */
-  #offset-section {
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  #offset-label {
-    font-size: 11px;
-    color: var(--grey);
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-
-  #offset-select {
-    flex: 1;
-    background: var(--surface);
-    border: 1px solid var(--surface2);
-    border-radius: 8px;
-    color: var(--white);
-    font-size: 14px;
-    font-family: var(--font-sans);
-    padding: 8px 10px;
-    appearance: none;
-    -webkit-appearance: none;
-    cursor: pointer;
-    outline: none;
-    text-align: center;
-  }
+  #offset-section { flex-shrink: 0; display: flex; align-items: center; gap: 8px; }
+  #offset-label { font-size: 11px; color: var(--grey); white-space: nowrap; flex-shrink: 0; }
+  #offset-select { flex: 1; background: var(--surface); border: 1px solid var(--surface2); border-radius: 8px; color: var(--white); font-size: 14px; padding: 8px 10px; appearance: none; -webkit-appearance: none; cursor: pointer; outline: none; text-align: center; }
   #offset-select option { background: #222; }
-
-  #btn-reload {
-    background: var(--surface);
-    border: 1px solid var(--surface2);
-    border-radius: 8px;
-    color: var(--grey);
-    font-size: 18px;
-    padding: 8px 12px;
-    cursor: pointer;
-    transition: background 0.15s;
-    flex-shrink: 0;
-    -webkit-tap-highlight-color: transparent;
-  }
+  #btn-reload { background: var(--surface); border: 1px solid var(--surface2); border-radius: 8px; color: var(--grey); font-size: 18px; padding: 8px 12px; cursor: pointer; transition: background 0.15s; flex-shrink: 0; }
   #btn-reload:active { background: var(--surface2); color: var(--white); }
 
-  /* ── ERROR / TOAST ───────────────────────────────── */
-  #toast {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #333;
-    color: var(--white);
-    font-size: 13px;
-    padding: 10px 18px;
-    border-radius: 20px;
-    opacity: 0;
-    transition: opacity 0.3s;
-    pointer-events: none;
-    z-index: 100;
-    white-space: nowrap;
-  }
+  #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #333; color: var(--white); font-size: 13px; padding: 10px 18px; border-radius: 20px; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 100; white-space: nowrap; }
   #toast.show { opacity: 1; }
-
-  #loading-overlay {
-    position: fixed; inset: 0;
-    background: rgba(10,10,10,0.85);
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 16px;
-    z-index: 50;
-    transition: opacity 0.3s;
-  }
+  #loading-overlay { position: fixed; inset: 0; background: rgba(10,10,10,0.88); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; z-index: 50; transition: opacity 0.3s; }
   #loading-overlay.hidden { opacity: 0; pointer-events: none; }
-
-  #loading-spinner {
-    width: 40px; height: 40px;
-    border: 3px solid var(--surface2);
-    border-top-color: var(--red);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
+  #loading-spinner { width: 40px; height: 40px; border: 3px solid var(--surface2); border-top-color: var(--red); border-radius: 50%; animation: spin 0.8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
-
-  #loading-text {
-    font-size: 14px;
-    color: var(--grey);
-  }
+  #loading-text { font-size: 14px; color: var(--grey); }
 </style>
 </head>
 <body>
-
 <div id="app">
-
-  <!-- HEADER -->
   <div id="header">
     <div id="logo">
       <div id="logo-box">SRF</div>
@@ -474,7 +114,6 @@
     <div id="status-dot"></div>
   </div>
 
-  <!-- NOW PLAYING -->
   <div id="now-playing">
     <div id="show-label">Läuft gerade</div>
     <div id="show-title">Wird geladen…</div>
@@ -485,17 +124,15 @@
     </div>
   </div>
 
-  <!-- TIMELINE (position in 2h window) -->
   <div id="timeline-section">
     <div id="timeline-labels">
       <span id="tl-start">−2h</span>
-      <span id="tl-now-label" style="color:var(--grey)">jetzt</span>
+      <span style="color:var(--grey)">jetzt</span>
     </div>
     <div id="timeline-track" onclick="handleTimelineClick(event)">
       <div id="timeline-fill" style="width:0%"></div>
       <div id="timeline-thumb" style="left:0%"></div>
     </div>
-    <!-- Segment progress within current show -->
     <div id="segment-progress">
       <div id="segment-labels">
         <span id="segment-elapsed">0:00</span>
@@ -505,13 +142,11 @@
     </div>
   </div>
 
-  <!-- PLAYLIST -->
   <div id="playlist-section">
     <div id="playlist-header">Programm</div>
     <div id="playlist"></div>
   </div>
 
-  <!-- SEEK BUTTONS -->
   <div id="seek-section">
     <div id="seek-row">
       <div class="seek-group">
@@ -530,16 +165,14 @@
     </div>
   </div>
 
-  <!-- MAIN CONTROLS -->
   <div id="controls">
-    <button id="btn-prev" onclick="prevShow()" title="Vorherige Sendung">⏮</button>
+    <button id="btn-prev" onclick="prevShow()">⏮</button>
     <button id="btn-play" onclick="togglePlay()">▶</button>
-    <button id="btn-next" onclick="nextShow()" title="Nächste Sendung">⏭</button>
+    <button id="btn-next" onclick="nextShow()">⏭</button>
   </div>
 
-  <!-- OFFSET SELECTOR -->
   <div id="offset-section">
-    <span id="offset-label">Starten ab:</span>
+    <span id="offset-label">Start:</span>
     <select id="offset-select" onchange="reloadWithOffset()">
       <option value="30">30 Min zurück</option>
       <option value="60">1 Std zurück</option>
@@ -548,283 +181,279 @@
       <option value="240">4 Std zurück</option>
       <option value="360">6 Std zurück</option>
     </select>
-    <button id="btn-reload" onclick="reloadWithOffset()" title="Neu laden">↺</button>
+    <button id="btn-reload" onclick="reloadWithOffset()">↺</button>
   </div>
-
 </div>
 
-<!-- LOADING OVERLAY -->
 <div id="loading-overlay">
   <div id="loading-spinner"></div>
   <div id="loading-text">Programm wird geladen…</div>
 </div>
-
-<!-- TOAST -->
 <div id="toast"></div>
-
 <audio id="audio" preload="none"></audio>
 
 <script>
-// ─── CONFIG ───────────────────────────────────────────────────────────────────
-const CHANNEL_ID = '69e8ac16-4327-4af4-b873-fd5cd6e895a7'; // SRF 4 News
-const IL_BASE = 'https://il.srgssr.ch/integrationlayer/2.0';
+// SRF 4 News Show-IDs (fest kodiert, öffentlich bekannt)
+// Wir laden die neuesten Episoden dieser Sendungen und filtern nach Zeitfenster
+const SHOWS = [
+  { id: 'bfffc6d6-58e8-4b34-8a35-9a3e43d5e7a2', name: 'SRF 4 News' },
+  { id: '8476fe5d-8f3b-4c54-9c73-c0eebc26f6c1', name: 'HeuteMorgen' },
+  { id: 'fd0de1c6-91a3-4b02-aae5-de83b7d85f2e', name: 'Rendez-vous' },
+  { id: 'c4cfb98c-7564-42a4-ae96-f8e11dde0cc0', name: 'Echo der Zeit' },
+  { id: '8f27b768-c8b0-4e2b-a3f4-9f5b6e2d1a8c', name: 'Heute Morgen' },
+];
+
+const IL = 'https://il.srgssr.ch/integrationlayer/2.0/srf';
 const FALLBACK_STREAM = 'https://stream.srg-ssr.ch/srgssr/srf4news/aac/192';
 
-// ─── STATE ────────────────────────────────────────────────────────────────────
-let episodes = [];       // [{title, startTime, endTime, duration, urn, audioUrl}]
+let episodes = [];
 let currentIdx = 0;
 let isPlaying = false;
-let windowStartMs = 0;   // absolute ms: when our 2h window starts
+let windowStartMs = 0;
 let windowEndMs = 0;
-let usingFallback = false;
 let tickInterval = null;
 
 const audio = document.getElementById('audio');
 
-// ─── INIT ─────────────────────────────────────────────────────────────────────
-window.addEventListener('load', () => {
-  loadProgram();
-});
+window.addEventListener('load', loadProgram);
 
 async function loadProgram() {
   showLoading('Programm wird geladen…');
   const offsetMin = parseInt(document.getElementById('offset-select').value) || 120;
-  const now = Date.now();
-  windowStartMs = now - offsetMin * 60 * 1000;
-  windowEndMs = now;
-
-  document.getElementById('tl-start').textContent = `−${offsetMin >= 60 ? (offsetMin/60)+'h' : offsetMin+'m'}`;
+  windowEndMs = Date.now();
+  windowStartMs = windowEndMs - offsetMin * 60 * 1000;
+  document.getElementById('tl-start').textContent = offsetMin >= 60 ? `−${offsetMin/60}h` : `−${offsetMin}m`;
 
   try {
-    episodes = await fetchEpisodes(windowStartMs, windowEndMs);
-    if (episodes.length === 0) throw new Error('Keine Sendungen gefunden');
-
+    episodes = await fetchAllEpisodes(windowStartMs, windowEndMs);
+    if (episodes.length === 0) throw new Error('Keine Episoden im Zeitfenster');
     renderPlaylist();
-    // Start at episode closest to windowStart
-    currentIdx = 0;
-    await loadEpisode(currentIdx, 0);
+    await loadEpisode(0, 0);
     hideLoading();
-  } catch (e) {
-    console.warn('API-Fehler, Fallback auf Live-Stream:', e);
-    usingFallback = true;
-    episodes = [{
-      title: 'SRF 4 News Live',
-      startTime: windowStartMs,
-      endTime: windowEndMs,
-      duration: offsetMin * 60,
-      urn: null,
-      audioUrl: FALLBACK_STREAM
-    }];
-    renderPlaylist();
-    audio.src = FALLBACK_STREAM;
-    hideLoading();
-    showToast('On-Demand nicht verfügbar – Live-Stream läuft');
+  } catch(e) {
+    console.warn('Fehler:', e);
+    useFallback(offsetMin);
   }
 }
 
-// ─── API ──────────────────────────────────────────────────────────────────────
-async function fetchEpisodes(fromMs, toMs) {
-  // 1. Get program guide for the time window
-  const dateFrom = new Date(fromMs - 60 * 60 * 1000); // 1h buffer before
-  const dateStr = dateFrom.toISOString().split('T')[0]; // YYYY-MM-DD
-  const url = `${IL_BASE}/srf/programGuide/radio/byChannelId/${CHANNEL_ID}?numberOfItems=50&date=${dateStr}`;
+async function fetchAllEpisodes(fromMs, toMs) {
+  // Methode 1: Direkt nach Audio-Episoden des Kanals suchen
+  // Kanal-URN für SRF 4 News
+  const channelUrn = 'urn:srf:channel:radio:69e8ac16-4327-4af4-b873-fd5cd6e895a7';
+  
+  // Versuche die neuesten Episoden des Kanals zu holen
+  const url = `${IL}/latestEpisodesByChannel/byChannelUrn/${channelUrn}?numberOfEpisodes=30&vector=portalplay`;
+  
+  let resp;
+  try {
+    resp = await fetch(url);
+  } catch(e) {
+    throw new Error('Netzwerkfehler');
+  }
 
-  const resp = await fetch(url);
-  if (!resp.ok) throw new Error(`Program guide HTTP ${resp.status}`);
+  if (!resp.ok) {
+    // Fallback: versuche bekannte Show-IDs
+    return fetchByShowIds(fromMs, toMs);
+  }
+
   const data = await resp.json();
+  const list = data?.episodeList ?? data?.episodes ?? data?.data ?? [];
+  
+  if (list.length === 0) return fetchByShowIds(fromMs, toMs);
 
-  const shows = data?.programGuide?.[0]?.show ?? data?.show ?? data?.data ?? [];
-  if (!Array.isArray(shows) || shows.length === 0) {
-    // Try alternative structure
-    return await fetchEpisodesAlt(fromMs, toMs);
-  }
-
-  return processShows(shows, fromMs, toMs);
+  return processEpisodeList(list, fromMs, toMs);
 }
 
-async function fetchEpisodesAlt(fromMs, toMs) {
-  // Alternative: use episodeComposition endpoint for SRF 4 News show
-  // SRF 4 News Aktuell show ID
-  const showIds = [
-    'b21f6047-4b8e-4f33-88cd-35ca62fbde48', // SRF 4 News Aktuell
-    '8476fe5d-8f3b-4c54-9c73-c0eebc26f6c1', // HeuteMorgen
+async function fetchByShowIds(fromMs, toMs) {
+  const allEps = [];
+  
+  // Bekannte SRF 4 News Sendungen direkt abfragen
+  const knownShows = [
+    'c4cfb98c-7564-42a4-ae96-f8e11dde0cc0', // Echo der Zeit
+    '8476fe5d-8f3b-4c54-9c73-c0eebc26f6c1', // HeuteMorgen  
     'fd0de1c6-91a3-4b02-aae5-de83b7d85f2e', // Rendez-vous
   ];
 
-  const allEps = [];
-  for (const showId of showIds) {
+  for (const showId of knownShows) {
     try {
-      const url = `${IL_BASE}/srf/episodeComposition/latestEpisodesByShow/byShowId/${showId}?numberOfEpisodes=5&vector=appplay`;
-      const resp = await fetch(url);
-      if (!resp.ok) continue;
-      const data = await resp.json();
-      const eps = data?.episodeList ?? [];
+      const url = `${IL}/episodeComposition/latestEpisodesByShow/byShowId/${showId}?numberOfEpisodes=5&vector=portalplay`;
+      const r = await fetch(url);
+      if (!r.ok) continue;
+      const d = await r.json();
+      const eps = d?.episodeList ?? [];
       allEps.push(...eps);
     } catch(e) { /* skip */ }
   }
 
-  if (allEps.length === 0) throw new Error('Keine Episoden gefunden');
+  // Auch nach "SRF 4 News" im Audios-Suchendpunkt suchen
+  try {
+    const searchUrl = `${IL}/audios/byChannel/id/69e8ac16-4327-4af4-b873-fd5cd6e895a7?numberOfAudios=20&vector=portalplay`;
+    const r = await fetch(searchUrl);
+    if (r.ok) {
+      const d = await r.json();
+      const eps = d?.audioList ?? d?.episodes ?? [];
+      allEps.push(...eps);
+    }
+  } catch(e) { /* skip */ }
 
-  // Map to our format
-  return allEps
-    .map(ep => {
-      const startMs = new Date(ep.publishedDate || ep.date).getTime();
-      const dur = (ep.duration || 0) / 1000;
-      const chapter = ep.chapterList?.[0];
-      const resource = chapter?.resourceList?.find(r =>
-        r.mimeType?.includes('audio') || r.url?.includes('.mp3') || r.url?.includes('.aac') || r.url?.includes('audio')
-      ) || chapter?.resourceList?.[0];
-      return {
-        title: ep.title || chapter?.title || 'Sendung',
-        startTime: startMs,
-        endTime: startMs + dur * 1000,
-        duration: dur,
-        urn: ep.urn,
-        audioUrl: resource?.url || null,
-        chapterUrn: chapter?.urn
-      };
-    })
-    .filter(ep => ep.audioUrl && ep.startTime <= toMs && ep.endTime >= fromMs)
-    .sort((a, b) => a.startTime - b.startTime);
+  if (allEps.length === 0) throw new Error('Keine Sendungen gefunden');
+  return processEpisodeList(allEps, fromMs, toMs);
 }
 
-function processShows(shows, fromMs, toMs) {
-  return shows
-    .map(show => {
-      const startMs = show.startTime * 1000 || new Date(show.scheduledStartTime || show.startDate).getTime();
-      const endMs = show.endTime * 1000 || new Date(show.scheduledEndTime || show.endDate).getTime();
-      const dur = (endMs - startMs) / 1000;
-      return {
-        title: show.title || show.show?.title || 'Sendung',
-        startTime: startMs,
-        endTime: endMs,
-        duration: dur,
-        urn: show.urn || show.show?.urn,
-        audioUrl: null // will be fetched lazily
-      };
-    })
-    .filter(ep => ep.startTime <= toMs && ep.endTime >= fromMs)
-    .sort((a, b) => a.startTime - b.startTime);
+function processEpisodeList(list, fromMs, toMs) {
+  const eps = list.map(ep => {
+    // Zeitstempel ermitteln
+    const pubDate = ep.publishedDate || ep.date || ep.broadcastDate;
+    const startMs = pubDate ? new Date(pubDate).getTime() : 0;
+    
+    // Dauer
+    const dur = (ep.duration || ep.chapterList?.[0]?.duration || 0) / 1000;
+    const endMs = startMs + dur * 1000;
+
+    // Titel
+    const title = ep.title || ep.chapterList?.[0]?.title || 'Sendung';
+
+    // Audio-URL aus resourceList
+    const chapter = ep.chapterList?.[0];
+    const resource = chapter?.resourceList?.find(r =>
+      !r.drmProtected && (r.mimeType?.includes('audio') || r.protocol === 'HLS' ||
+      r.url?.includes('.mp3') || r.url?.includes('.aac') || r.url?.includes('m3u8'))
+    ) || chapter?.resourceList?.[0];
+
+    return {
+      title,
+      startMs,
+      endMs,
+      duration: dur,
+      audioUrl: resource?.url || null,
+      urn: ep.urn || chapter?.urn
+    };
+  })
+  .filter(ep => ep.audioUrl && ep.startMs > 0)
+  .filter(ep => ep.endMs >= fromMs && ep.startMs <= toMs)
+  .sort((a, b) => a.startMs - b.startMs);
+
+  // Duplikate entfernen
+  const seen = new Set();
+  return eps.filter(ep => {
+    const key = ep.urn || ep.audioUrl;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 async function resolveAudioUrl(ep) {
   if (ep.audioUrl) return ep.audioUrl;
   if (!ep.urn) return null;
   try {
-    const url = `${IL_BASE}/mediaComposition/byUrn/${ep.urn}.json?onlyChapters=true&vector=portalplay`;
-    const resp = await fetch(url);
-    if (!resp.ok) return null;
-    const data = await resp.json();
-    const chapter = data?.chapterList?.[0];
-    const resource = chapter?.resourceList?.find(r =>
-      (r.mimeType?.includes('audio') || r.protocol === 'HLS') && !r.drmProtected
-    ) || chapter?.resourceList?.[0];
+    const url = `https://il.srgssr.ch/integrationlayer/2.0/mediaComposition/byUrn/${ep.urn}.json?onlyChapters=true&vector=portalplay`;
+    const r = await fetch(url);
+    if (!r.ok) return null;
+    const d = await r.json();
+    const chapter = d?.chapterList?.[0];
+    const resource = chapter?.resourceList?.find(r => !r.drmProtected) || chapter?.resourceList?.[0];
     ep.audioUrl = resource?.url || null;
     return ep.audioUrl;
   } catch(e) { return null; }
 }
 
-// ─── PLAYBACK ─────────────────────────────────────────────────────────────────
-async function loadEpisode(idx, seekSec = 0) {
+function useFallback(offsetMin) {
+  episodes = [{
+    title: 'SRF 4 News Live',
+    startMs: windowStartMs,
+    endMs: windowEndMs,
+    duration: offsetMin * 60,
+    audioUrl: FALLBACK_STREAM,
+    urn: null
+  }];
+  renderPlaylist();
+  audio.src = FALLBACK_STREAM;
+  hideLoading();
+  showToast('On-Demand nicht verfügbar – Live-Stream');
+}
+
+// ── PLAYBACK ─────────────────────────────────────────
+async function loadEpisode(idx, seekSec) {
   if (idx < 0 || idx >= episodes.length) return;
   currentIdx = idx;
-
   const ep = episodes[idx];
-  setStatusDot('loading');
-  document.getElementById('show-title').textContent = ep.title;
-  document.getElementById('show-time').textContent = formatTime(ep.startTime);
-  document.getElementById('show-duration').textContent = ep.duration > 0
-    ? `${Math.round(ep.duration / 60)} Min`
-    : '?';
 
+  setDot('loading');
+  document.getElementById('show-title').textContent = ep.title;
+  document.getElementById('show-time').textContent = fmtTime(ep.startMs);
+  document.getElementById('show-duration').textContent = ep.duration > 0 ? `${Math.round(ep.duration/60)} Min` : '?';
   renderPlaylist();
 
-  let url = await resolveAudioUrl(ep);
+  const url = await resolveAudioUrl(ep);
   if (!url) {
-    showToast('Audio nicht verfügbar – überspringe');
-    if (idx + 1 < episodes.length) loadEpisode(idx + 1, 0);
+    showToast('Audio nicht verfügbar');
+    if (idx + 1 < episodes.length) { loadEpisode(idx+1, 0); }
     return;
   }
 
   audio.src = url;
-  audio.currentTime = seekSec;
-  if (isPlaying) {
-    try { await audio.play(); } catch(e) { console.warn(e); }
-  }
+  if (seekSec > 0) audio.currentTime = seekSec;
+  if (isPlaying) audio.play().catch(()=>{});
   startTick();
-  renderPlaylist();
 }
 
 async function togglePlay() {
   if (audio.paused) {
-    setStatusDot('loading');
+    setDot('loading');
     try {
       await audio.play();
       isPlaying = true;
       document.getElementById('btn-play').textContent = '⏸';
-      setStatusDot('playing');
+      setDot('playing');
     } catch(e) {
       showToast('Wiedergabe fehlgeschlagen');
-      setStatusDot('idle');
+      setDot('idle');
     }
   } else {
     audio.pause();
     isPlaying = false;
     document.getElementById('btn-play').textContent = '▶';
-    setStatusDot('idle');
+    setDot('idle');
   }
 }
 
 function seek(deltaSec) {
   if (!episodes.length) return;
   const ep = episodes[currentIdx];
+  const dur = audio.duration || ep.duration || 999999;
+  const newTime = (audio.currentTime || 0) + deltaSec;
 
-  // If within episode
-  const newTime = audio.currentTime + deltaSec;
-  if (newTime >= 0 && newTime <= (ep.duration || audio.duration || 9999)) {
+  if (newTime >= 0 && newTime <= dur) {
     audio.currentTime = Math.max(0, newTime);
     showToast(`${deltaSec > 0 ? '+' : ''}${deltaSec}s`);
     return;
   }
-
-  // Jump to previous/next episode
-  if (newTime < 0) {
-    if (currentIdx > 0) {
-      const prev = episodes[currentIdx - 1];
-      const seekInPrev = Math.max(0, (prev.duration || 0) + newTime);
-      loadEpisode(currentIdx - 1, seekInPrev);
-      if (isPlaying) audio.play().catch(() => {});
-      showToast('Vorherige Sendung');
-    } else {
-      audio.currentTime = 0;
-    }
-  } else {
-    if (currentIdx + 1 < episodes.length) {
-      const over = newTime - (ep.duration || audio.duration || 0);
-      loadEpisode(currentIdx + 1, Math.max(0, over));
-      if (isPlaying) audio.play().catch(() => {});
-      showToast('Nächste Sendung');
-    }
-  }
-}
-
-function prevShow() {
-  if (currentIdx > 0) {
-    loadEpisode(currentIdx - 1, 0);
-    if (isPlaying) audio.play().catch(() => {});
-  } else {
+  if (newTime < 0 && currentIdx > 0) {
+    const prev = episodes[currentIdx-1];
+    const seekIn = Math.max(0, (prev.duration||0) + newTime);
+    loadEpisode(currentIdx-1, seekIn);
+    if (isPlaying) audio.play().catch(()=>{});
+    showToast('← Vorherige Sendung');
+  } else if (newTime > dur && currentIdx+1 < episodes.length) {
+    loadEpisode(currentIdx+1, 0);
+    if (isPlaying) audio.play().catch(()=>{});
+    showToast('Nächste Sendung →');
+  } else if (newTime < 0) {
     audio.currentTime = 0;
   }
 }
 
-function nextShow() {
-  if (currentIdx + 1 < episodes.length) {
-    loadEpisode(currentIdx + 1, 0);
-    if (isPlaying) audio.play().catch(() => {});
-  }
+function prevShow() {
+  if (currentIdx > 0) { loadEpisode(currentIdx-1, 0); if(isPlaying) audio.play().catch(()=>{}); }
+  else audio.currentTime = 0;
 }
 
-// ─── TICK / PROGRESS ──────────────────────────────────────────────────────────
+function nextShow() {
+  if (currentIdx+1 < episodes.length) { loadEpisode(currentIdx+1, 0); if(isPlaying) audio.play().catch(()=>{}); }
+}
+
+// ── PROGRESS ─────────────────────────────────────────
 function startTick() {
   if (tickInterval) clearInterval(tickInterval);
   tickInterval = setInterval(updateProgress, 1000);
@@ -838,148 +467,109 @@ function updateProgress() {
   const dur = audio.duration || ep.duration || 1;
 
   // Segment bar
-  const segPct = Math.min(100, (cur / dur) * 100);
-  document.getElementById('segment-fill').style.width = segPct + '%';
-  document.getElementById('segment-elapsed').textContent = formatDur(cur);
-  document.getElementById('segment-remaining').textContent = '−' + formatDur(dur - cur);
+  document.getElementById('segment-fill').style.width = Math.min(100,(cur/dur)*100) + '%';
+  document.getElementById('segment-elapsed').textContent = fmtDur(cur);
+  document.getElementById('segment-remaining').textContent = '−' + fmtDur(Math.max(0, dur-cur));
 
-  // Timeline bar: position relative to window
-  const epOffset = ep.startTime - windowStartMs;
-  const windowLen = windowEndMs - windowStartMs;
-  const epStartPct = (epOffset / windowLen) * 100;
-  const epProgress = (cur / Math.max(dur, 1)) * (ep.duration / (windowLen / 1000)) * 100;
-  const tlPct = Math.min(99, Math.max(0, epStartPct + epProgress));
-  document.getElementById('timeline-fill').style.width = tlPct + '%';
-  document.getElementById('timeline-thumb').style.left = tlPct + '%';
+  // Timeline
+  const winLen = windowEndMs - windowStartMs || 1;
+  const epOff = ep.startMs - windowStartMs;
+  const epLenPct = (ep.duration * 1000 / winLen) * 100;
+  const epStartPct = (epOff / winLen) * 100;
+  const pct = Math.min(99, Math.max(0, epStartPct + (cur/Math.max(dur,1)) * epLenPct));
+  document.getElementById('timeline-fill').style.width = pct + '%';
+  document.getElementById('timeline-thumb').style.left = pct + '%';
 
-  // Status dot
-  if (!audio.paused) setStatusDot('playing');
+  if (!audio.paused) setDot('playing');
 }
 
 audio.addEventListener('ended', () => {
-  if (currentIdx + 1 < episodes.length) {
-    loadEpisode(currentIdx + 1, 0);
-    audio.play().catch(() => {});
-  } else {
-    isPlaying = false;
-    document.getElementById('btn-play').textContent = '▶';
-    setStatusDot('idle');
-    showToast('Playlist beendet');
-  }
+  if (currentIdx+1 < episodes.length) { loadEpisode(currentIdx+1,0); audio.play().catch(()=>{}); }
+  else { isPlaying=false; document.getElementById('btn-play').textContent='▶'; setDot('idle'); showToast('Playlist beendet'); }
 });
-
 audio.addEventListener('playing', () => {
-  isPlaying = true;
-  document.getElementById('btn-play').textContent = '⏸';
-  setStatusDot('playing');
-  document.getElementById('btn-play').classList.remove('loading');
+  isPlaying=true; document.getElementById('btn-play').textContent='⏸';
+  document.getElementById('btn-play').classList.remove('loading'); setDot('playing');
 });
+audio.addEventListener('waiting', () => { setDot('loading'); document.getElementById('btn-play').classList.add('loading'); });
+audio.addEventListener('canplay', () => { document.getElementById('btn-play').classList.remove('loading'); });
 
-audio.addEventListener('waiting', () => {
-  setStatusDot('loading');
-  document.getElementById('btn-play').classList.add('loading');
-});
-
-audio.addEventListener('canplay', () => {
-  document.getElementById('btn-play').classList.remove('loading');
-  setStatusDot(isPlaying ? 'playing' : 'idle');
-});
-
-// ─── TIMELINE CLICK ───────────────────────────────────────────────────────────
 function handleTimelineClick(e) {
   const rect = e.currentTarget.getBoundingClientRect();
   const pct = (e.clientX - rect.left) / rect.width;
   const targetMs = windowStartMs + pct * (windowEndMs - windowStartMs);
-
-  // Find which episode this falls into
-  let found = episodes.findIndex((ep, i) => {
-    const nextStart = episodes[i + 1]?.startTime ?? windowEndMs;
-    return targetMs >= ep.startTime && targetMs < nextStart;
+  let found = episodes.findIndex((ep,i) => {
+    const next = episodes[i+1]?.startMs ?? windowEndMs;
+    return targetMs >= ep.startMs && targetMs < next;
   });
   if (found < 0) found = 0;
-
-  const ep = episodes[found];
-  const seekInEp = Math.max(0, (targetMs - ep.startTime) / 1000);
-  loadEpisode(found, seekInEp);
-  if (isPlaying) audio.play().catch(() => {});
+  const seekIn = Math.max(0, (targetMs - episodes[found].startMs)/1000);
+  loadEpisode(found, seekIn);
+  if (isPlaying) audio.play().catch(()=>{});
 }
 
-// ─── PLAYLIST RENDER ──────────────────────────────────────────────────────────
+// ── RENDER ────────────────────────────────────────────
 function renderPlaylist() {
-  const container = document.getElementById('playlist');
-  container.innerHTML = '';
+  const c = document.getElementById('playlist');
+  c.innerHTML = '';
+  if (episodes.length === 0) {
+    c.innerHTML = '<div style="color:var(--grey);font-size:13px;padding:12px">Keine Sendungen gefunden</div>';
+    return;
+  }
   episodes.forEach((ep, i) => {
     const div = document.createElement('div');
-    div.className = 'pl-item' +
-      (i === currentIdx ? ' active' : '') +
-      (i < currentIdx ? ' played' : '');
+    div.className = 'pl-item' + (i===currentIdx?' active':'') + (i<currentIdx?' played':'');
     div.innerHTML = `
-      <span class="pl-time">${formatTime(ep.startTime)}</span>
+      <span class="pl-time">${fmtTime(ep.startMs)}</span>
       <div class="pl-info">
         <div class="pl-name">${ep.title}</div>
-        <div class="pl-dur">${ep.duration > 0 ? formatDur(ep.duration) : '?'}</div>
+        <div class="pl-dur">${ep.duration>0?fmtDur(ep.duration):'?'}</div>
       </div>
-      <span class="pl-arrow">${i === currentIdx ? '▶' : '›'}</span>
-    `;
-    div.addEventListener('click', () => {
-      loadEpisode(i, 0);
-      if (isPlaying) audio.play().catch(() => {});
-    });
-    container.appendChild(div);
+      <span class="pl-arrow">${i===currentIdx?'▶':'›'}</span>`;
+    div.addEventListener('click', () => { loadEpisode(i,0); if(isPlaying) audio.play().catch(()=>{}); });
+    c.appendChild(div);
   });
-
-  // Scroll active into view
   setTimeout(() => {
-    const active = container.querySelector('.active');
-    if (active) active.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    const a = c.querySelector('.active');
+    if (a) a.scrollIntoView({block:'nearest',behavior:'smooth'});
   }, 100);
 }
 
-// ─── RELOAD ───────────────────────────────────────────────────────────────────
 function reloadWithOffset() {
-  if (isPlaying) { audio.pause(); isPlaying = false; }
-  document.getElementById('btn-play').textContent = '▶';
-  setStatusDot('idle');
+  if (isPlaying) { audio.pause(); isPlaying=false; }
+  document.getElementById('btn-play').textContent='▶';
+  setDot('idle');
   loadProgram();
 }
 
-// ─── HELPERS ──────────────────────────────────────────────────────────────────
-function formatTime(ms) {
+// ── HELPERS ───────────────────────────────────────────
+function fmtTime(ms) {
   if (!ms) return '--:--';
   const d = new Date(ms);
   return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
 }
-
-function formatDur(sec) {
+function fmtDur(sec) {
   if (!sec || isNaN(sec)) return '0:00';
-  const m = Math.floor(sec / 60);
-  const s = Math.floor(sec % 60);
+  const m = Math.floor(sec/60), s = Math.floor(sec%60);
   return m + ':' + s.toString().padStart(2,'0');
 }
-
-function setStatusDot(state) {
-  const dot = document.getElementById('status-dot');
-  dot.className = 'status-dot';
-  if (state === 'playing') dot.classList.add('playing');
-  else if (state === 'loading') dot.classList.add('loading');
+function setDot(state) {
+  const d = document.getElementById('status-dot');
+  d.className = '';
+  if (state==='playing') d.classList.add('playing');
+  else if (state==='loading') d.classList.add('loading');
 }
-
 function showLoading(msg) {
-  document.getElementById('loading-text').textContent = msg || 'Lädt…';
+  document.getElementById('loading-text').textContent = msg||'Lädt…';
   document.getElementById('loading-overlay').classList.remove('hidden');
 }
-
-function hideLoading() {
-  document.getElementById('loading-overlay').classList.add('hidden');
-}
-
+function hideLoading() { document.getElementById('loading-overlay').classList.add('hidden'); }
 let toastTimer;
 function showToast(msg) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
+  t.textContent = msg; t.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 2000);
 }
 </script>
 </body>
