@@ -9,21 +9,21 @@
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
   :root {
-    --dlf-bg:       #0d1b2a;
-    --dlf-panel:    #152338;
-    --dlf-border:   #1e3250;
-    --dlf-accent:   #4e9af1;
-    --dlf-live:     #e8453c;
-    --dlf-text:     #e8edf3;
-    --dlf-muted:    #7a90a8;
-    --dlf-btn:      #1e3250;
-    --dlf-btn-h:    #2a4570;
+    --bg:       #0d1b2a;
+    --panel:    #152338;
+    --border:   #1e3250;
+    --accent:   #4e9af1;
+    --live:     #e8453c;
+    --text:     #e8edf3;
+    --muted:    #7a90a8;
+    --btn:      #1e3250;
+    --btn-h:    #2a4570;
   }
 
   html, body {
     height: 100%;
-    background: var(--dlf-bg);
-    color: var(--dlf-text);
+    background: var(--bg);
+    color: var(--text);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     overflow: hidden;
   }
@@ -34,7 +34,6 @@
     height: 100vh;
     max-width: 480px;
     margin: 0 auto;
-    padding: 0;
   }
 
   /* ── Header ── */
@@ -43,22 +42,24 @@
     align-items: center;
     gap: 14px;
     padding: 20px 20px 16px;
-    border-bottom: 1px solid var(--dlf-border);
+    border-bottom: 1px solid var(--border);
     flex-shrink: 0;
   }
 
   #dlf-logo {
-    width: 52px;
-    height: 52px;
+    width: 52px; height: 52px;
     background: #1a73e8;
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    font-size: 20px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -1px;
+    font-family: Arial, sans-serif;
   }
-
-  #dlf-logo svg { width: 32px; height: 32px; }
 
   #header-text { flex: 1; min-width: 0; }
 
@@ -66,14 +67,13 @@
     font-size: 20px;
     font-weight: 700;
     letter-spacing: -0.3px;
-    color: var(--dlf-text);
   }
 
   #live-badge {
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    background: var(--dlf-live);
+    background: var(--live);
     color: #fff;
     font-size: 11px;
     font-weight: 700;
@@ -81,18 +81,15 @@
     padding: 2px 7px;
     border-radius: 3px;
     margin-top: 3px;
-    opacity: 1;
-    transition: opacity 0.3s;
   }
+  #live-badge.delayed { background: var(--btn); color: var(--muted); }
 
-  #live-badge.delayed { background: var(--dlf-btn); color: var(--dlf-muted); }
-
-  /* ── EPG Block ── */
+  /* ── EPG ── */
   #epg-block {
     padding: 16px 20px;
-    border-bottom: 1px solid var(--dlf-border);
+    border-bottom: 1px solid var(--border);
     flex-shrink: 0;
-    min-height: 90px;
+    min-height: 88px;
   }
 
   #epg-label {
@@ -100,14 +97,13 @@
     font-weight: 600;
     letter-spacing: 1.2px;
     text-transform: uppercase;
-    color: var(--dlf-muted);
+    color: var(--muted);
     margin-bottom: 6px;
   }
 
   #epg-title {
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 600;
-    color: var(--dlf-text);
     line-height: 1.3;
     margin-bottom: 4px;
     white-space: nowrap;
@@ -115,31 +111,28 @@
     text-overflow: ellipsis;
   }
 
-  #epg-time {
-    font-size: 13px;
-    color: var(--dlf-muted);
-  }
+  #epg-time { font-size: 13px; color: var(--muted); }
 
   #epg-progress-wrap {
     margin-top: 10px;
     height: 3px;
-    background: var(--dlf-border);
+    background: var(--border);
     border-radius: 2px;
     overflow: hidden;
   }
 
-  #epg-progress-bar {
+  #epg-bar {
     height: 100%;
-    background: var(--dlf-accent);
+    background: var(--accent);
     border-radius: 2px;
     width: 0%;
-    transition: width 10s linear;
+    transition: width 8s linear;
   }
 
-  /* ── Stream Clock ── */
+  /* ── Clock ── */
   #clock-block {
     padding: 14px 20px;
-    border-bottom: 1px solid var(--dlf-border);
+    border-bottom: 1px solid var(--border);
     flex-shrink: 0;
     display: flex;
     align-items: center;
@@ -151,35 +144,22 @@
     font-weight: 200;
     letter-spacing: 2px;
     font-variant-numeric: tabular-nums;
-    color: var(--dlf-text);
   }
 
-  #delay-indicator {
-    font-size: 13px;
-    color: var(--dlf-muted);
-    text-align: right;
-  }
-
-  #delay-secs { color: var(--dlf-accent); font-weight: 600; }
+  #delay-indicator { font-size: 13px; color: var(--muted); text-align: right; }
+  #delay-secs { color: var(--accent); font-weight: 600; }
 
   /* ── Controls ── */
-  #controls {
-    padding: 20px;
-    flex-shrink: 0;
-  }
+  #controls { padding: 20px; flex-shrink: 0; }
 
-  .btn-row {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
+  .btn-row { display: flex; gap: 10px; }
 
   .btn {
     flex: 1;
-    background: var(--dlf-btn);
-    border: 1px solid var(--dlf-border);
+    background: var(--btn);
+    border: 1px solid var(--border);
     border-radius: 12px;
-    color: var(--dlf-text);
+    color: var(--text);
     font-size: 15px;
     font-weight: 600;
     padding: 18px 8px;
@@ -191,41 +171,29 @@
     gap: 4px;
     user-select: none;
     -webkit-user-select: none;
+    touch-action: manipulation;
   }
 
-  .btn:active { background: var(--dlf-btn-h); transform: scale(0.97); }
-
+  .btn:active { background: var(--btn-h); transform: scale(0.97); }
   .btn .icon { font-size: 22px; }
-  .btn .label { font-size: 11px; font-weight: 500; color: var(--dlf-muted); }
+  .btn .label { font-size: 11px; font-weight: 500; color: var(--muted); }
 
-  #btn-play-pause { flex: 1.4; }
-  #btn-play-pause .icon { font-size: 32px; }
+  #btn-play { flex: 1.4; }
+  #btn-play .icon { font-size: 32px; }
 
-  #btn-live {
-    background: transparent;
-    border-color: var(--dlf-live);
-    color: var(--dlf-live);
-  }
-
-  #btn-live.at-live {
-    background: var(--dlf-live);
-    color: #fff;
-  }
-
+  #btn-live { border-color: var(--live); color: var(--live); }
   #btn-live .label { color: inherit; opacity: 0.8; }
+  #btn-live.at-live { background: var(--live); color: #fff; }
 
-  /* ── Hour Jump ── */
-  #hour-section {
-    padding: 0 20px 16px;
-    flex-shrink: 0;
-  }
+  /* ── Hour buttons ── */
+  #hour-section { padding: 0 20px 16px; flex-shrink: 0; }
 
   #hour-label {
     font-size: 10px;
     font-weight: 600;
     letter-spacing: 1.2px;
     text-transform: uppercase;
-    color: var(--dlf-muted);
+    color: var(--muted);
     margin-bottom: 10px;
   }
 
@@ -234,45 +202,42 @@
     gap: 8px;
     overflow-x: auto;
     scrollbar-width: none;
-    -ms-overflow-style: none;
     padding-bottom: 4px;
   }
-
   #hour-scroll::-webkit-scrollbar { display: none; }
 
   .hour-btn {
     flex-shrink: 0;
-    background: var(--dlf-btn);
-    border: 1px solid var(--dlf-border);
+    background: var(--btn);
+    border: 1px solid var(--border);
     border-radius: 8px;
-    color: var(--dlf-text);
+    color: var(--text);
     font-size: 14px;
     font-weight: 500;
     padding: 10px 16px;
     cursor: pointer;
-    transition: background 0.15s;
     white-space: nowrap;
     font-variant-numeric: tabular-nums;
+    touch-action: manipulation;
   }
-
-  .hour-btn:active { background: var(--dlf-btn-h); }
-  .hour-btn.active { background: var(--dlf-accent); border-color: var(--dlf-accent); color: #fff; }
+  .hour-btn:active { background: var(--btn-h); }
+  .hour-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 
   /* ── Status ── */
   #status-bar {
     margin-top: auto;
     padding: 12px 20px;
     font-size: 12px;
-    color: var(--dlf-muted);
+    color: var(--muted);
     text-align: center;
-    border-top: 1px solid var(--dlf-border);
+    border-top: 1px solid var(--border);
     flex-shrink: 0;
   }
 
-  /* ── Loading overlay ── */
+  /* ── Loading ── */
   #loading {
     position: fixed; inset: 0;
-    background: var(--dlf-bg);
+    background: var(--bg);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -280,19 +245,17 @@
     gap: 16px;
     z-index: 100;
   }
-
   #loading.hidden { display: none; }
 
   .spinner {
     width: 40px; height: 40px;
-    border: 3px solid var(--dlf-border);
-    border-top-color: var(--dlf-accent);
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
-
   @keyframes spin { to { transform: rotate(360deg); } }
-  #loading p { color: var(--dlf-muted); font-size: 14px; }
+  #loading p { color: var(--muted); font-size: 14px; }
 </style>
 </head>
 <body>
@@ -305,12 +268,7 @@
 <div id="app">
 
   <div id="header">
-    <div id="dlf-logo">
-      <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="32" height="32" rx="6" fill="#1a73e8"/>
-        <text x="4" y="23" font-size="18" font-weight="800" fill="white" font-family="Arial">dlf</text>
-      </svg>
-    </div>
+    <div id="dlf-logo">dlf</div>
     <div id="header-text">
       <div id="station-name">Deutschlandfunk</div>
       <div id="live-badge">● LIVE</div>
@@ -321,39 +279,31 @@
     <div id="epg-label">Jetzt</div>
     <div id="epg-title">Wird geladen…</div>
     <div id="epg-time"></div>
-    <div id="epg-progress-wrap">
-      <div id="epg-progress-bar"></div>
-    </div>
+    <div id="epg-progress-wrap"><div id="epg-bar"></div></div>
   </div>
 
   <div id="clock-block">
     <div id="stream-clock">--:--:--</div>
-    <div id="delay-indicator">
-      <span id="delay-secs">0</span>s zurück
-    </div>
+    <div id="delay-indicator"><span id="delay-secs">0</span>s zurück</div>
   </div>
 
   <div id="controls">
     <div class="btn-row">
-      <button class="btn" id="btn-minus30" onclick="seek(-30)">
-        <span class="icon">↩</span>
-        <span class="label">30 s</span>
+      <button class="btn" id="btn-m30" onclick="seek(-30)">
+        <span class="icon">↩</span><span class="label">30 s</span>
       </button>
-      <button class="btn" id="btn-minus10" onclick="seek(-10)">
-        <span class="icon">↺</span>
-        <span class="label">10 s</span>
+      <button class="btn" id="btn-m10" onclick="seek(-10)">
+        <span class="icon">↺</span><span class="label">10 s</span>
       </button>
-      <button class="btn" id="btn-play-pause" onclick="togglePlay()">
+      <button class="btn" id="btn-play" onclick="togglePlay()">
         <span class="icon" id="play-icon">▶</span>
         <span class="label" id="play-label">Play</span>
       </button>
-      <button class="btn" id="btn-plus10" onclick="seek(+10)">
-        <span class="icon">↻</span>
-        <span class="label">10 s</span>
+      <button class="btn" id="btn-p10" onclick="seek(+10)">
+        <span class="icon">↻</span><span class="label">10 s</span>
       </button>
       <button class="btn" id="btn-live" onclick="goLive()">
-        <span class="icon">▶▶</span>
-        <span class="label">Live</span>
+        <span class="icon">▶▶</span><span class="label">Live</span>
       </button>
     </div>
   </div>
@@ -363,111 +313,154 @@
     <div id="hour-scroll"></div>
   </div>
 
-  <div id="status-bar" id="status">Bereit</div>
+  <div id="status-bar">Bereit</div>
 
 </div>
 
 <audio id="audio" preload="none"></audio>
 
 <script>
-// ── Config ──────────────────────────────────────────────
-const HLS_URL     = 'https://dist.deutschlandfunk.de/dlf/hls-ard/master.m3u8';
-const MP3_URL     = 'https://st01.sslstream.dlf.de/dlf/01/128/mp3/stream.mp3';
-const PUBLISHER   = 'urn:ard:publisher:230618cb036fb289';
-const EPG_API     = 'https://programm-api.ard.de/program/api/program';
-const DVR_WINDOW  = 7200; // 2h in Sekunden
+// ── Konfiguration ───────────────────────────────────────
+const HLS_URL    = 'https://dist.deutschlandfunk.de/dlf/hls-ard/master.m3u8';
+const MP3_URL    = 'https://st01.sslstream.dlf.de/dlf/01/128/mp3/stream.mp3';
+const PUBLISHER  = 'urn:ard:publisher:230618cb036fb289';
+const EPG_API    = 'https://programm-api.ard.de/program/api/program';
+const DVR_WINDOW = 7200; // 2h
 
-// ── State ────────────────────────────────────────────────
-let hls = null;
-let hlsReady = false;
-let anchorWallclock = null; // Date-Objekt: Wallclock-Zeit als hls.liveSyncPosition gesetzt wurde
-let anchorMediatime  = null; // entsprechende audio.currentTime
-let epgData = [];            // [{title, start, end}]
-let epgTimer = null;
-let clockTimer = null;
+// ── State ───────────────────────────────────────────────
+let hls            = null;
+let hlsReady       = false;
+let isFallback     = false;
+let pendingSeek    = null;   // Wallclock-Ziel das nach Anchor-Bereitschaft ausgeführt wird
+
+// Anchor: verbindet Mediatime mit Wallclock
+let anchorMedia    = null;   // audio.currentTime beim Ankerpunkt
+let anchorWall     = null;   // Date-Objekt beim Ankerpunkt
+let anchorLive     = null;   // liveSyncPosition beim Ankerpunkt
+
+let epgData        = [];
+let clockTimer     = null;
+let seeking        = false;  // verhindert Re-Entrancy beim Seek
 
 const audio   = document.getElementById('audio');
 const loading = document.getElementById('loading');
 
-// ── Init ─────────────────────────────────────────────────
+// ── Initialisierung ─────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
   buildHourButtons();
-  initPlayer();
+  initHLS();
   fetchEPG();
+  setInterval(buildHourButtons, 60_000);
 });
 
-// ── HLS Player ──────────────────────────────────────────
-function initPlayer() {
-  if (Hls.isSupported()) {
-    hls = new Hls({
-      liveSyncDurationCount: 3,
-      liveMaxLatencyDurationCount: 10,
-      enableWorker: true,
-    });
-    hls.loadSource(HLS_URL);
-    hls.attachMedia(audio);
-
-    hls.on(Hls.Events.MANIFEST_PARSED, () => {
-      setAnchor();
-      audio.play().catch(() => {});
-    });
-
-    hls.on(Hls.Events.LEVEL_LOADED, () => {
-      if (!hlsReady) {
-        hlsReady = true;
+// ── HLS Setup ───────────────────────────────────────────
+function initHLS() {
+  if (!Hls.isSupported()) {
+    if (audio.canPlayType('application/vnd.apple.mpegurl')) {
+      // Native HLS (Safari/iOS) – kein DVR-Seek möglich
+      audio.src = HLS_URL;
+      audio.addEventListener('loadedmetadata', () => {
         loading.classList.add('hidden');
-        startClockTimer();
-      }
-    });
-
-    hls.on(Hls.Events.ERROR, (e, data) => {
-      if (data.fatal) fallbackMP3();
-    });
-  } else if (audio.canPlayType('application/vnd.apple.mpegurl')) {
-    audio.src = HLS_URL;
-    audio.addEventListener('loadedmetadata', () => {
-      setAnchor();
-      loading.classList.add('hidden');
-      startClockTimer();
-      audio.play().catch(() => {});
-    });
-  } else {
-    fallbackMP3();
+        startClock();
+        audio.play().catch(() => {});
+        setStatus('Native HLS – Timeshift eingeschränkt');
+      });
+    } else {
+      useFallbackMP3();
+    }
+    return;
   }
 
-  audio.addEventListener('play',  updatePlayUI);
-  audio.addEventListener('pause', updatePlayUI);
-  audio.addEventListener('timeupdate', updateDelayAndEPG);
+  hls = new Hls({
+    // Grosszügige DVR-Einstellungen – verhindert automatisches Zurückspringen
+    liveSyncDurationCount:      6,
+    liveMaxLatencyDurationCount: 12,
+    maxMaxBufferLength:         120,
+    // Kein aggressives Live-Syncing
+    liveDurationInfinity:       true,
+    enableWorker:               true,
+  });
+
+  hls.loadSource(HLS_URL);
+  hls.attachMedia(audio);
+
+  hls.on(Hls.Events.MANIFEST_PARSED, () => {
+    audio.play().catch(() => {});
+  });
+
+  // Erst nach LEVEL_LOADED ist liveSyncPosition verlässlich
+  hls.on(Hls.Events.LEVEL_LOADED, (_e, data) => {
+    if (!hlsReady) {
+      hlsReady = true;
+      loading.classList.add('hidden');
+      startClock();
+      // DVR-Verfügbarkeit prüfen
+      const details = data.details;
+      if (details && details.live) {
+        const dvrSecs = Math.round(details.totalduration || 0);
+        setStatus(dvrSecs > 60
+          ? `DVR verfügbar: ~${Math.round(dvrSecs/60)} Min`
+          : 'DVR: Kein ausreichendes Puffer');
+      }
+    }
+    // Anchor immer aktualisieren wenn nah an Live
+    if (getDelaySecs() < 15) refreshAnchor();
+
+    // Ausstehenden Sprung jetzt ausführen (Anchor ist frisch)
+    if (pendingSeek) {
+      const target = pendingSeek;
+      pendingSeek = null;
+      _doJumpToWallclock(target);
+    }
+  });
+
+  hls.on(Hls.Events.ERROR, (_e, data) => {
+    if (data.fatal) {
+      console.warn('HLS fatal error:', data.type, data.details);
+      useFallbackMP3();
+    }
+  });
+
+  audio.addEventListener('play',       updatePlayUI);
+  audio.addEventListener('pause',      updatePlayUI);
+  audio.addEventListener('timeupdate', onTimeUpdate);
+  audio.addEventListener('seeked',     onSeeked);
 }
 
-function fallbackMP3() {
+function useFallbackMP3() {
+  isFallback = true;
   hls = null;
   audio.src = MP3_URL;
   loading.classList.add('hidden');
   audio.play().catch(() => {});
-  setStatus('MP3-Fallback (kein Timeshift)');
-  // disable seek buttons
-  ['btn-minus30','btn-minus10','btn-plus10','btn-live'].forEach(id => {
-    document.getElementById(id).style.opacity = '0.3';
-    document.getElementById(id).style.pointerEvents = 'none';
+  setStatus('MP3-Fallback aktiv (kein Timeshift)');
+  ['btn-m30','btn-m10','btn-p10','btn-live'].forEach(id => {
+    const el = document.getElementById(id);
+    el.style.opacity = '0.3';
+    el.style.pointerEvents = 'none';
+  });
+  document.querySelectorAll('.hour-btn').forEach(b => {
+    b.style.opacity = '0.3';
+    b.style.pointerEvents = 'none';
   });
 }
 
-// ── Anchor: Wallclock↔Mediatime Mapping ─────────────────
-function setAnchor() {
+// ── Anchor-System ────────────────────────────────────────
+// Verbindet audio.currentTime mit echter Uhrzeit
+function refreshAnchor() {
   if (!hls) return;
   const lsp = hls.liveSyncPosition;
-  if (lsp && isFinite(lsp)) {
-    anchorMediatime  = lsp;
-    anchorWallclock  = new Date();
-  }
+  if (!lsp || !isFinite(lsp)) return;
+  anchorMedia = lsp;
+  anchorWall  = new Date();
+  anchorLive  = lsp;
 }
 
-// Aktuelle Wallclock-Zeit basierend auf audio.currentTime
+// Liefert die Wallclock-Zeit des aktuell gehörten Moments
 function getStreamWallclock() {
-  if (!anchorWallclock || !anchorMediatime) return null;
-  const deltaSec = audio.currentTime - anchorMediatime;
-  return new Date(anchorWallclock.getTime() + deltaSec * 1000);
+  if (!anchorWall || anchorMedia === null) return null;
+  const delta = audio.currentTime - anchorMedia;
+  return new Date(anchorWall.getTime() + delta * 1000);
 }
 
 // Versatz zur Live-Kante in Sekunden
@@ -478,23 +471,25 @@ function getDelaySecs() {
   return Math.max(0, Math.round(lsp - audio.currentTime));
 }
 
-// ── Steuerung ───────────────────────────────────────────
+// ── Steuerung ────────────────────────────────────────────
 function seek(deltaSec) {
-  if (!hls) return;
-  const newTime = audio.currentTime + deltaSec;
+  if (isFallback || !hls) return;
   const lsp = hls.liveSyncPosition;
+  if (!lsp || !isFinite(lsp)) return;
   const minTime = lsp - DVR_WINDOW;
-  audio.currentTime = Math.max(minTime, Math.min(lsp, newTime));
+  const newTime = Math.max(minTime, Math.min(lsp, audio.currentTime + deltaSec));
+  seeking = true;
+  audio.currentTime = newTime;
   updateLiveBadge();
 }
 
 function goLive() {
-  if (!hls) return;
+  if (isFallback || !hls) return;
   const lsp = hls.liveSyncPosition;
-  if (lsp && isFinite(lsp)) {
-    audio.currentTime = lsp;
-    setAnchor();
-  }
+  if (!lsp || !isFinite(lsp)) return;
+  seeking = true;
+  audio.currentTime = lsp;
+  refreshAnchor();
   updateLiveBadge();
 }
 
@@ -505,137 +500,159 @@ function togglePlay() {
 
 // Sprung zu einem Wallclock-Zeitstempel
 function jumpToWallclock(targetDate) {
-  if (!hls || !anchorWallclock || !anchorMediatime) return;
-  const lsp = hls.liveSyncPosition;
-  const deltaFromAnchor = (targetDate - anchorWallclock) / 1000;
-  const targetMediatime = anchorMediatime + deltaFromAnchor;
-  const minTime = lsp - DVR_WINDOW;
-  if (targetMediatime < minTime || targetMediatime > lsp) {
-    setStatus('Zeitpunkt ausserhalb des DVR-Fensters (max. 2h)');
+  if (isFallback) return;
+  if (!anchorWall || anchorMedia === null) {
+    // Anchor noch nicht bereit – Sprung für später vormerken
+    pendingSeek = targetDate;
+    setStatus('Warte auf Stream-Synchronisation…');
+    // Anchor-Bereitschaft erzwingen durch erneutes Level-Load
+    if (hls) hls.startLoad();
     return;
   }
-  audio.currentTime = targetMediatime;
-  updateLiveBadge();
+  _doJumpToWallclock(targetDate);
 }
 
-// ── UI Updates ───────────────────────────────────────────
-function updatePlayUI() {
-  const icon  = document.getElementById('play-icon');
-  const label = document.getElementById('play-label');
-  if (audio.paused) { icon.textContent = '▶'; label.textContent = 'Play'; }
-  else              { icon.textContent = '⏸'; label.textContent = 'Pause'; }
-}
-
-function updateLiveBadge() {
-  const delay = getDelaySecs();
-  const badge = document.getElementById('live-badge');
-  const btnLive = document.getElementById('btn-live');
-  if (delay < 8) {
-    badge.textContent = '● LIVE';
-    badge.classList.remove('delayed');
-    btnLive.classList.add('at-live');
-  } else {
-    badge.textContent = '● ZEITVERSETZT';
-    badge.classList.add('delayed');
-    btnLive.classList.remove('at-live');
+function _doJumpToWallclock(targetDate) {
+  if (!hls) return;
+  const lsp = hls.liveSyncPosition;
+  if (!lsp || !isFinite(lsp)) {
+    setStatus('Stream noch nicht bereit – bitte warten');
+    return;
   }
+
+  // Mediatime für den Ziel-Wallclock berechnen
+  const deltaFromAnchor = (targetDate.getTime() - anchorWall.getTime()) / 1000;
+  const targetMedia = anchorMedia + deltaFromAnchor;
+  const minTime = lsp - DVR_WINDOW;
+
+  if (targetMedia > lsp) {
+    setStatus('Zielzeit liegt in der Zukunft');
+    return;
+  }
+  if (targetMedia < minTime) {
+    setStatus(`Ausserhalb DVR-Fenster (max. ${DVR_WINDOW/3600}h zurück)`);
+    return;
+  }
+
+  seeking = true;
+  audio.currentTime = targetMedia;
+  updateLiveBadge();
+  const t = targetDate.toLocaleTimeString('de-DE', {hour:'2-digit', minute:'2-digit'});
+  setStatus(`Gesprungen zu ${t}`);
 }
 
-function updateDelayAndEPG() {
-  const delay = getDelaySecs();
-  document.getElementById('delay-secs').textContent = delay;
-  updateLiveBadge();
+// nach einem Seek: Anchor neu setzen und EPG aktualisieren
+function onSeeked() {
+  seeking = false;
   updateEPGDisplay();
 }
 
-// ── Uhr ──────────────────────────────────────────────────
-function startClockTimer() {
-  if (clockTimer) clearInterval(clockTimer);
-  clockTimer = setInterval(updateClock, 500);
-  updateClock();
+// ── UI ───────────────────────────────────────────────────
+function updatePlayUI() {
+  const paused = audio.paused;
+  document.getElementById('play-icon').textContent  = paused ? '▶' : '⏸';
+  document.getElementById('play-label').textContent = paused ? 'Play' : 'Pause';
 }
 
-function updateClock() {
+function updateLiveBadge() {
+  const delay   = getDelaySecs();
+  const badge   = document.getElementById('live-badge');
+  const btnLive = document.getElementById('btn-live');
+  const isLive  = delay < 10;
+  badge.textContent = isLive ? '● LIVE' : '● ZEITVERSETZT';
+  badge.classList.toggle('delayed', !isLive);
+  btnLive.classList.toggle('at-live', isLive);
+}
+
+function onTimeUpdate() {
+  document.getElementById('delay-secs').textContent = getDelaySecs();
+  updateLiveBadge();
+  if (!seeking) updateEPGDisplay();
+}
+
+// ── Uhr ──────────────────────────────────────────────────
+function startClock() {
+  if (clockTimer) clearInterval(clockTimer);
+  clockTimer = setInterval(tickClock, 500);
+  tickClock();
+}
+
+function tickClock() {
   const wc = getStreamWallclock();
   const el = document.getElementById('stream-clock');
-  if (!wc) {
-    // Fallback: Systemzeit
-    el.textContent = new Date().toLocaleTimeString('de-DE');
-    return;
-  }
-  el.textContent = wc.toLocaleTimeString('de-DE');
-  // Anchor regelmässig nachkalibrieren wenn live
-  if (getDelaySecs() < 8) setAnchor();
+  el.textContent = (wc || new Date()).toLocaleTimeString('de-DE');
+  // Anchor laufend nachkalibrieren wenn live
+  if (getDelaySecs() < 10) refreshAnchor();
 }
 
 // ── EPG ──────────────────────────────────────────────────
 async function fetchEPG() {
-  try {
-    const now = new Date();
-    const dateStr = now.toISOString().slice(0, 10); // YYYY-MM-DD
-    const url = `${EPG_API}?publisherId=${encodeURIComponent(PUBLISHER)}&date=${dateStr}&maxLength=48`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const json = await res.json();
-    parseEPG(json);
-  } catch(e) {
-    document.getElementById('epg-title').textContent = 'Programmdaten nicht verfügbar';
-    console.warn('EPG Fehler:', e);
+  const dates = [new Date()];
+  const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+  dates.push(tomorrow);
+
+  for (const d of dates) {
+    const dateStr = d.toISOString().slice(0, 10);
+    // KORREKTUR: Parameter heisst "publisher", nicht "publisherId"
+    const url = `${EPG_API}?publisher=${encodeURIComponent(PUBLISHER)}&date=${dateStr}&maxLength=50`;
+    try {
+      const res = await fetch(url);
+      if (!res.ok) { console.warn('EPG HTTP', res.status); continue; }
+      const json = await res.json();
+      parseEPG(json, d !== dates[0]);
+    } catch(e) {
+      console.warn('EPG Fehler:', e);
+    }
   }
 
-  // Morgen auch laden (falls nah an Mitternacht)
-  try {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const dateStr = tomorrow.toISOString().slice(0, 10);
-    const url = `${EPG_API}?publisherId=${encodeURIComponent(PUBLISHER)}&date=${dateStr}&maxLength=48`;
-    const res = await fetch(url);
-    if (res.ok) {
-      const json = await res.json();
-      parseEPG(json, true);
-    }
-  } catch(e) {}
-
-  // Alle 5 Minuten refreshen
-  setTimeout(fetchEPG, 5 * 60 * 1000);
+  setTimeout(fetchEPG, 5 * 60_000);
 }
 
 function parseEPG(json, append = false) {
-  // ARD Programm-API Struktur erkunden
+  // ARD API: Struktur kann variieren – defensiv durchsuchen
   let items = [];
-  if (json.data) {
-    // verschiedene mögliche Strukturen
-    const d = json.data;
-    if (Array.isArray(d)) items = d;
-    else if (d.broadcastSchedule) items = d.broadcastSchedule;
-    else if (d.items) items = d.items;
-    else if (d.program) items = d.program;
-    else {
-      // Flach durchsuchen
-      for (const key of Object.keys(d)) {
-        if (Array.isArray(d[key])) { items = d[key]; break; }
+
+  const probe = (obj) => {
+    if (!obj || typeof obj !== 'object') return;
+    if (Array.isArray(obj)) { if (obj.length > 0) items = obj; return; }
+    for (const key of ['broadcastSchedule','items','program','broadcasts','schedule']) {
+      if (Array.isArray(obj[key])) { items = obj[key]; return; }
+    }
+    // Eine Ebene tiefer
+    for (const key of Object.keys(obj)) {
+      if (Array.isArray(obj[key]) && obj[key].length > 0) {
+        // Nur wenn Einträge broadcastStart oder ähnliches haben
+        if (obj[key][0]?.broadcastStart || obj[key][0]?.startDate || obj[key][0]?.start) {
+          items = obj[key];
+          return;
+        }
       }
     }
-  } else if (Array.isArray(json)) {
-    items = json;
-  } else if (json.broadcastSchedule) {
-    items = json.broadcastSchedule;
-  } else if (json.items) {
-    items = json.items;
-  }
+  };
+
+  if (json.data) probe(json.data);
+  else probe(json);
 
   const parsed = items.map(item => ({
-    title: item.title || item.broadcastTitle || item.show?.title || '?',
-    start: new Date(item.broadcastStart || item.startDate || item.start || item.broadcastOn),
-    end:   new Date(item.broadcastEnd   || item.endDate   || item.end   || item.broadcastEnd),
-  })).filter(i => i.start && !isNaN(i.start));
+    title: item.title || item.broadcastTitle || item.show?.title || item.program?.title || '–',
+    start: new Date(item.broadcastStart || item.startDate || item.start || 0),
+    end:   new Date(item.broadcastEnd   || item.endDate   || item.end   || 0),
+  })).filter(i => i.start && !isNaN(i.start.getTime()) && i.start.getTime() > 0);
 
-  if (append) epgData = [...epgData, ...parsed].sort((a,b) => a.start-b.start);
-  else        epgData = parsed.sort((a,b) => a.start - b.start);
+  if (append) {
+    epgData = [...epgData, ...parsed].sort((a, b) => a.start - b.start);
+  } else {
+    epgData = parsed.sort((a, b) => a.start - b.start);
+  }
 
   updateEPGDisplay();
-  if (parsed.length > 0) setStatus(`EPG: ${parsed.length} Einträge geladen`);
-  else                   setStatus('EPG: Keine Einträge – Struktur prüfen');
+
+  if (parsed.length > 0) {
+    setStatus(`EPG: ${epgData.length} Einträge geladen`);
+  } else {
+    setStatus('EPG: Keine Einträge gefunden – API-Struktur prüfen');
+    console.log('EPG raw response:', JSON.stringify(json).slice(0, 500));
+  }
 }
 
 function updateEPGDisplay() {
@@ -643,28 +660,24 @@ function updateEPGDisplay() {
   const wc = getStreamWallclock() || new Date();
 
   const current = epgData.find(i => wc >= i.start && wc < i.end);
-  const titleEl = document.getElementById('epg-title');
-  const timeEl  = document.getElementById('epg-time');
-  const bar     = document.getElementById('epg-progress-bar');
-  const label   = document.getElementById('epg-label');
+  const delay   = getDelaySecs();
 
-  const delay = getDelaySecs();
-  label.textContent = delay > 8 ? 'Lief um' : 'Jetzt';
+  document.getElementById('epg-label').textContent = delay > 10 ? 'Lief um' : 'Jetzt';
 
   if (current) {
-    titleEl.textContent = current.title;
-    const startStr = current.start.toLocaleTimeString('de-DE', {hour:'2-digit', minute:'2-digit'});
-    const endStr   = current.end.toLocaleTimeString('de-DE',   {hour:'2-digit', minute:'2-digit'});
-    timeEl.textContent = `${startStr} – ${endStr}`;
-
-    const total    = current.end - current.start;
-    const elapsed  = wc - current.start;
-    const pct      = Math.min(100, Math.max(0, (elapsed / total) * 100));
-    bar.style.width = pct + '%';
+    document.getElementById('epg-title').textContent = current.title;
+    const fmt = { hour: '2-digit', minute: '2-digit' };
+    const s = current.start.toLocaleTimeString('de-DE', fmt);
+    const e = current.end.toLocaleTimeString('de-DE', fmt);
+    document.getElementById('epg-time').textContent = `${s} – ${e}`;
+    const total   = current.end - current.start;
+    const elapsed = wc - current.start;
+    const pct     = Math.min(100, Math.max(0, (elapsed / total) * 100));
+    document.getElementById('epg-bar').style.width = pct + '%';
   } else {
-    titleEl.textContent = '–';
-    timeEl.textContent = '';
-    bar.style.width = '0%';
+    document.getElementById('epg-title').textContent = '–';
+    document.getElementById('epg-time').textContent  = '';
+    document.getElementById('epg-bar').style.width   = '0%';
   }
 }
 
@@ -685,11 +698,11 @@ function buildHourButtons() {
       ? `${pad(t.getHours())}:00 (jetzt)`
       : `${pad(t.getHours())}:00`;
 
-    const targetDate = new Date(t); // closure
+    const target = new Date(t);
     btn.onclick = () => {
       document.querySelectorAll('.hour-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      jumpToWallclock(targetDate);
+      jumpToWallclock(target);
     };
 
     container.appendChild(btn);
@@ -698,13 +711,9 @@ function buildHourButtons() {
 
 function pad(n) { return String(n).padStart(2, '0'); }
 
-// ── Status ───────────────────────────────────────────────
 function setStatus(msg) {
   document.getElementById('status-bar').textContent = msg;
 }
-
-// Stunden-Buttons alle Minute neu bauen (falls Stunde wechselt)
-setInterval(buildHourButtons, 60 * 1000);
 </script>
 </body>
 </html>
