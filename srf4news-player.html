@@ -3,381 +3,708 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>SRF 4 News Player</title>
+<title>Deutschlandfunk</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.7/hls.min.js"></script>
 <style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
   :root {
-    --bg:#0a0a0a;--surface:#161616;--surface2:#222;--red:#e4001a;--red-dim:#8a0010;
-    --white:#f0f0f0;--grey:#888;--grey-dim:#444;--green:#00c853;
-    --mono:'SF Mono','Fira Code','Courier New',monospace;
-    --sans:-apple-system,'Helvetica Neue',Arial,sans-serif;
+    --dlf-bg:       #0d1b2a;
+    --dlf-panel:    #152338;
+    --dlf-border:   #1e3250;
+    --dlf-accent:   #4e9af1;
+    --dlf-live:     #e8453c;
+    --dlf-text:     #e8edf3;
+    --dlf-muted:    #7a90a8;
+    --dlf-btn:      #1e3250;
+    --dlf-btn-h:    #2a4570;
   }
-  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-  html,body{background:var(--bg);color:var(--white);font-family:var(--sans);height:100%;overflow:hidden;user-select:none}
-  #app{display:flex;flex-direction:column;height:100dvh;max-width:480px;margin:0 auto;padding:12px 12px 8px;gap:10px}
 
-  /* HEADER */
-  #hdr{display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-  #logo{display:flex;align-items:center;gap:8px}
-  #logo-box{background:var(--red);color:#fff;font-weight:900;font-size:13px;padding:3px 7px;border-radius:3px}
-  #logo-lbl{font-size:13px;font-weight:600;color:var(--grey);letter-spacing:.5px;text-transform:uppercase}
-  #dot{width:9px;height:9px;border-radius:50%;background:var(--grey-dim);transition:background .3s}
-  #dot.on{background:var(--green);box-shadow:0 0 7px var(--green)}
-  #dot.loading{background:var(--red);animation:pulse 1s infinite}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  html, body {
+    height: 100%;
+    background: var(--dlf-bg);
+    color: var(--dlf-text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    overflow: hidden;
+  }
 
-  /* NOW PLAYING */
-  #np{background:var(--surface);border-radius:10px;padding:14px 16px;flex-shrink:0;border-left:3px solid var(--red)}
-  #np-lbl{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--red);margin-bottom:4px}
-  #np-title{font-size:18px;font-weight:700;line-height:1.2;margin-bottom:6px;min-height:22px}
-  #np-meta{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--grey);font-family:var(--mono)}
-  #np-time{color:var(--white);font-weight:600}
+  #app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0;
+  }
 
-  /* TIMELINE */
-  #tl-wrap{flex-shrink:0}
-  #tl-labels{display:flex;justify-content:space-between;font-size:10px;font-family:var(--mono);color:var(--grey);margin-bottom:4px;padding:0 2px}
-  #tl-track{width:100%;height:6px;background:var(--surface2);border-radius:3px;position:relative;cursor:pointer}
-  #tl-fill{height:100%;background:var(--red);border-radius:3px;transition:width .5s linear;min-width:6px}
-  #tl-thumb{position:absolute;top:50%;transform:translate(-50%,-50%);width:14px;height:14px;background:var(--white);border-radius:50%;box-shadow:0 0 0 2px var(--red);transition:left .5s linear;pointer-events:none}
-  #seg-wrap{margin-top:8px}
-  #seg-labels{display:flex;justify-content:space-between;font-size:10px;font-family:var(--mono);color:var(--grey);margin-bottom:4px;padding:0 2px}
-  #seg-el{color:var(--white)}
-  #seg-track{width:100%;height:3px;background:var(--surface2);border-radius:2px}
-  #seg-fill{height:100%;background:var(--grey-dim);border-radius:2px;transition:width .5s linear}
+  /* ── Header ── */
+  #header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid var(--dlf-border);
+    flex-shrink: 0;
+  }
 
-  /* PLAYLIST */
-  #pl-sec{flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0}
-  #pl-hdr{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--grey);margin-bottom:6px;flex-shrink:0}
-  #pl{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:4px;scrollbar-width:none}
-  #pl::-webkit-scrollbar{display:none}
-  .pi{background:var(--surface);border-radius:8px;padding:10px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:background .15s;flex-shrink:0;border:1px solid transparent}
-  .pi:active{background:var(--surface2)}
-  .pi.active{background:var(--surface2);border-color:var(--red)}
-  .pi.done{opacity:.4}
-  .pi-t{font-family:var(--mono);font-size:12px;color:var(--grey);min-width:40px;flex-shrink:0}
-  .pi-i{flex:1;min-width:0}
-  .pi-n{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .pi.active .pi-n{color:var(--red)}
-  .pi-d{font-size:11px;font-family:var(--mono);color:var(--grey);margin-top:2px}
-  .pi-a{font-size:16px;color:var(--grey-dim);flex-shrink:0}
-  .pi.active .pi-a{color:var(--red)}
+  #dlf-logo {
+    width: 52px;
+    height: 52px;
+    background: #1a73e8;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
 
-  /* SEEK */
-  #sk-sec{flex-shrink:0}
-  #sk-row{display:flex;gap:6px;align-items:center}
-  .sk-g{display:flex;gap:4px;flex:1}
-  .sk{flex:1;background:var(--surface);border:1px solid var(--surface2);border-radius:8px;color:var(--white);font-size:12px;font-family:var(--mono);font-weight:700;padding:10px 2px;cursor:pointer;transition:background .1s,transform .1s;text-align:center;display:flex;flex-direction:column;align-items:center;gap:1px}
-  .sk:active{background:var(--surface2);transform:scale(.94)}
-  .sk .ar{font-size:10px;color:var(--grey)}
-  .sk .vl{font-size:13px}
-  #sk-div{width:1px;height:40px;background:var(--surface2);flex-shrink:0}
+  #dlf-logo svg { width: 32px; height: 32px; }
 
-  /* CONTROLS */
-  #ctrl{flex-shrink:0;display:flex;align-items:center;gap:10px}
-  #b-prev,#b-next{flex:1;background:var(--surface);border:none;border-radius:10px;color:var(--white);font-size:22px;padding:14px;cursor:pointer;transition:background .15s}
-  #b-prev:active,#b-next:active{background:var(--surface2)}
-  #b-play{flex:2;background:var(--red);border:none;border-radius:14px;color:#fff;font-size:28px;padding:18px;cursor:pointer;transition:background .15s,transform .1s;box-shadow:0 4px 20px rgba(228,0,26,.35)}
-  #b-play:active{transform:scale(.95)}
-  #b-play.dim{background:var(--red-dim)}
+  #header-text { flex: 1; min-width: 0; }
 
-  /* OFFSET */
-  #off-sec{flex-shrink:0;display:flex;align-items:center;gap:8px}
-  #off-lbl{font-size:11px;color:var(--grey);white-space:nowrap;flex-shrink:0}
-  #off-sel{flex:1;background:var(--surface);border:1px solid var(--surface2);border-radius:8px;color:var(--white);font-size:14px;padding:8px 10px;appearance:none;-webkit-appearance:none;cursor:pointer;outline:none;text-align:center}
-  #off-sel option{background:#222}
-  #b-reload{background:var(--surface);border:1px solid var(--surface2);border-radius:8px;color:var(--grey);font-size:18px;padding:8px 12px;cursor:pointer;transition:background .15s;flex-shrink:0}
-  #b-reload:active{background:var(--surface2);color:var(--white)}
+  #station-name {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    color: var(--dlf-text);
+  }
 
-  /* TOAST / OVERLAY */
-  #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#333;color:var(--white);font-size:13px;padding:10px 18px;border-radius:20px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:100;white-space:nowrap}
-  #toast.show{opacity:1}
-  #ov{position:fixed;inset:0;background:rgba(10,10,10,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:50;transition:opacity .3s}
-  #ov.hidden{opacity:0;pointer-events:none}
-  #spin{width:40px;height:40px;border:3px solid var(--surface2);border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  #ov-txt{font-size:14px;color:var(--grey)}
+  #live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--dlf-live);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    margin-top: 3px;
+    opacity: 1;
+    transition: opacity 0.3s;
+  }
+
+  #live-badge.delayed { background: var(--dlf-btn); color: var(--dlf-muted); }
+
+  /* ── EPG Block ── */
+  #epg-block {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--dlf-border);
+    flex-shrink: 0;
+    min-height: 90px;
+  }
+
+  #epg-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--dlf-muted);
+    margin-bottom: 6px;
+  }
+
+  #epg-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--dlf-text);
+    line-height: 1.3;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  #epg-time {
+    font-size: 13px;
+    color: var(--dlf-muted);
+  }
+
+  #epg-progress-wrap {
+    margin-top: 10px;
+    height: 3px;
+    background: var(--dlf-border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  #epg-progress-bar {
+    height: 100%;
+    background: var(--dlf-accent);
+    border-radius: 2px;
+    width: 0%;
+    transition: width 10s linear;
+  }
+
+  /* ── Stream Clock ── */
+  #clock-block {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--dlf-border);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  #stream-clock {
+    font-size: 36px;
+    font-weight: 200;
+    letter-spacing: 2px;
+    font-variant-numeric: tabular-nums;
+    color: var(--dlf-text);
+  }
+
+  #delay-indicator {
+    font-size: 13px;
+    color: var(--dlf-muted);
+    text-align: right;
+  }
+
+  #delay-secs { color: var(--dlf-accent); font-weight: 600; }
+
+  /* ── Controls ── */
+  #controls {
+    padding: 20px;
+    flex-shrink: 0;
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .btn {
+    flex: 1;
+    background: var(--dlf-btn);
+    border: 1px solid var(--dlf-border);
+    border-radius: 12px;
+    color: var(--dlf-text);
+    font-size: 15px;
+    font-weight: 600;
+    padding: 18px 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .btn:active { background: var(--dlf-btn-h); transform: scale(0.97); }
+
+  .btn .icon { font-size: 22px; }
+  .btn .label { font-size: 11px; font-weight: 500; color: var(--dlf-muted); }
+
+  #btn-play-pause { flex: 1.4; }
+  #btn-play-pause .icon { font-size: 32px; }
+
+  #btn-live {
+    background: transparent;
+    border-color: var(--dlf-live);
+    color: var(--dlf-live);
+  }
+
+  #btn-live.at-live {
+    background: var(--dlf-live);
+    color: #fff;
+  }
+
+  #btn-live .label { color: inherit; opacity: 0.8; }
+
+  /* ── Hour Jump ── */
+  #hour-section {
+    padding: 0 20px 16px;
+    flex-shrink: 0;
+  }
+
+  #hour-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--dlf-muted);
+    margin-bottom: 10px;
+  }
+
+  #hour-scroll {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 4px;
+  }
+
+  #hour-scroll::-webkit-scrollbar { display: none; }
+
+  .hour-btn {
+    flex-shrink: 0;
+    background: var(--dlf-btn);
+    border: 1px solid var(--dlf-border);
+    border-radius: 8px;
+    color: var(--dlf-text);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: background 0.15s;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .hour-btn:active { background: var(--dlf-btn-h); }
+  .hour-btn.active { background: var(--dlf-accent); border-color: var(--dlf-accent); color: #fff; }
+
+  /* ── Status ── */
+  #status-bar {
+    margin-top: auto;
+    padding: 12px 20px;
+    font-size: 12px;
+    color: var(--dlf-muted);
+    text-align: center;
+    border-top: 1px solid var(--dlf-border);
+    flex-shrink: 0;
+  }
+
+  /* ── Loading overlay ── */
+  #loading {
+    position: fixed; inset: 0;
+    background: var(--dlf-bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    z-index: 100;
+  }
+
+  #loading.hidden { display: none; }
+
+  .spinner {
+    width: 40px; height: 40px;
+    border: 3px solid var(--dlf-border);
+    border-top-color: var(--dlf-accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+  #loading p { color: var(--dlf-muted); font-size: 14px; }
 </style>
 </head>
 <body>
-<div id="app">
-  <div id="hdr">
-    <div id="logo"><div id="logo-box">SRF</div><div id="logo-lbl">4 News</div></div>
-    <div id="dot"></div>
-  </div>
 
-  <div id="np">
-    <div id="np-lbl">Läuft gerade</div>
-    <div id="np-title">Wird geladen…</div>
-    <div id="np-meta"><span id="np-time">--:--</span><span>·</span><span id="np-dur">-- Min</span></div>
-  </div>
-
-  <div id="tl-wrap">
-    <div id="tl-labels"><span id="tl-s">−2h</span><span style="color:var(--grey)">jetzt</span></div>
-    <div id="tl-track" onclick="tlClick(event)">
-      <div id="tl-fill" style="width:0%"></div>
-      <div id="tl-thumb" style="left:0%"></div>
-    </div>
-    <div id="seg-wrap">
-      <div id="seg-labels"><span id="seg-el">0:00</span><span id="seg-re">0:00</span></div>
-      <div id="seg-track"><div id="seg-fill" style="width:0%"></div></div>
-    </div>
-  </div>
-
-  <div id="pl-sec">
-    <div id="pl-hdr">Programm</div>
-    <div id="pl"></div>
-  </div>
-
-  <div id="sk-sec">
-    <div id="sk-row">
-      <div class="sk-g">
-        <button class="sk" onclick="seek(-600)"><span class="ar">◀</span><span class="vl">10m</span></button>
-        <button class="sk" onclick="seek(-180)"><span class="ar">◀</span><span class="vl">3m</span></button>
-        <button class="sk" onclick="seek(-60)"><span class="ar">◀</span><span class="vl">1m</span></button>
-        <button class="sk" onclick="seek(-15)"><span class="ar">◀</span><span class="vl">15s</span></button>
-      </div>
-      <div id="sk-div"></div>
-      <div class="sk-g">
-        <button class="sk" onclick="seek(15)"><span class="vl">15s</span><span class="ar">▶</span></button>
-        <button class="sk" onclick="seek(60)"><span class="vl">1m</span><span class="ar">▶</span></button>
-        <button class="sk" onclick="seek(180)"><span class="vl">3m</span><span class="ar">▶</span></button>
-        <button class="sk" onclick="seek(600)"><span class="vl">10m</span><span class="ar">▶</span></button>
-      </div>
-    </div>
-  </div>
-
-  <div id="ctrl">
-    <button id="b-prev" onclick="prevEp()">⏮</button>
-    <button id="b-play" onclick="togglePlay()">▶</button>
-    <button id="b-next" onclick="nextEp()">⏭</button>
-  </div>
-
-  <div id="off-sec">
-    <span id="off-lbl">Start:</span>
-    <select id="off-sel" onchange="reload()">
-      <option value="30">30 Min zurück</option>
-      <option value="60">1 Std zurück</option>
-      <option value="120" selected>2 Std zurück</option>
-      <option value="180">3 Std zurück</option>
-      <option value="240">4 Std zurück</option>
-      <option value="360">6 Std zurück</option>
-    </select>
-    <button id="b-reload" onclick="reload()">↺</button>
-  </div>
+<div id="loading">
+  <div class="spinner"></div>
+  <p>Verbinde…</p>
 </div>
 
-<div id="ov"><div id="spin"></div><div id="ov-txt">Programm wird geladen…</div></div>
-<div id="toast"></div>
+<div id="app">
+
+  <div id="header">
+    <div id="dlf-logo">
+      <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="32" height="32" rx="6" fill="#1a73e8"/>
+        <text x="4" y="23" font-size="18" font-weight="800" fill="white" font-family="Arial">dlf</text>
+      </svg>
+    </div>
+    <div id="header-text">
+      <div id="station-name">Deutschlandfunk</div>
+      <div id="live-badge">● LIVE</div>
+    </div>
+  </div>
+
+  <div id="epg-block">
+    <div id="epg-label">Jetzt</div>
+    <div id="epg-title">Wird geladen…</div>
+    <div id="epg-time"></div>
+    <div id="epg-progress-wrap">
+      <div id="epg-progress-bar"></div>
+    </div>
+  </div>
+
+  <div id="clock-block">
+    <div id="stream-clock">--:--:--</div>
+    <div id="delay-indicator">
+      <span id="delay-secs">0</span>s zurück
+    </div>
+  </div>
+
+  <div id="controls">
+    <div class="btn-row">
+      <button class="btn" id="btn-minus30" onclick="seek(-30)">
+        <span class="icon">↩</span>
+        <span class="label">30 s</span>
+      </button>
+      <button class="btn" id="btn-minus10" onclick="seek(-10)">
+        <span class="icon">↺</span>
+        <span class="label">10 s</span>
+      </button>
+      <button class="btn" id="btn-play-pause" onclick="togglePlay()">
+        <span class="icon" id="play-icon">▶</span>
+        <span class="label" id="play-label">Play</span>
+      </button>
+      <button class="btn" id="btn-plus10" onclick="seek(+10)">
+        <span class="icon">↻</span>
+        <span class="label">10 s</span>
+      </button>
+      <button class="btn" id="btn-live" onclick="goLive()">
+        <span class="icon">▶▶</span>
+        <span class="label">Live</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="hour-section">
+    <div id="hour-label">Zur vollen Stunde springen</div>
+    <div id="hour-scroll"></div>
+  </div>
+
+  <div id="status-bar" id="status">Bereit</div>
+
+</div>
+
 <audio id="audio" preload="none"></audio>
 
 <script>
-// ── Echte SRF Podcast-Feed-IDs (aus den Seiten-Metadaten extrahiert) ──────────
-const FEEDS = [
-  { name:'HeuteMorgen',    id:'8476fe5d-8f3b-4c54-9c73-c0eebc26f6c1' },
-  { name:'SRF 4 News',     id:'b21f6047-4b8e-4f33-88cd-35ca62fbde48' },
-  { name:'Rendez-vous',    id:'f4a31dc3-9c69-4042-b680-d4fe4ccb8b25' },
-  { name:'Echo der Zeit',  id:'28549e81-c453-4671-92ad-cb28796d06a8' },
-  { name:'Tagesgespräch',  id:'c5f77c8c-22a6-41b3-9b0c-5da0d5069ac2' },
-  { name:'News Plus',      id:'a64f8181-5e72-4bd5-9ab6-4f3f8e3e9a1c' },
-];
+// ── Config ──────────────────────────────────────────────
+const HLS_URL     = 'https://dist.deutschlandfunk.de/dlf/hls-ard/master.m3u8';
+const MP3_URL     = 'https://st01.sslstream.dlf.de/dlf/01/128/mp3/stream.mp3';
+const PUBLISHER   = 'urn:ard:publisher:230618cb036fb289';
+const EPG_API     = 'https://programm-api.ard.de/program/api/program';
+const DVR_WINDOW  = 7200; // 2h in Sekunden
 
-// CORS-Proxy (öffentlich, kein Key nötig)
-const PROXY = 'https://api.allorigins.win/raw?url=';
-const FALLBACK = 'https://stream.srg-ssr.ch/srgssr/srf4news/aac/192';
+// ── State ────────────────────────────────────────────────
+let hls = null;
+let hlsReady = false;
+let anchorWallclock = null; // Date-Objekt: Wallclock-Zeit als hls.liveSyncPosition gesetzt wurde
+let anchorMediatime  = null; // entsprechende audio.currentTime
+let epgData = [];            // [{title, start, end}]
+let epgTimer = null;
+let clockTimer = null;
 
-let eps = [], curIdx = 0, playing = false, winStart = 0, winEnd = 0, tick = null;
-const audio = document.getElementById('audio');
+const audio   = document.getElementById('audio');
+const loading = document.getElementById('loading');
 
-window.addEventListener('load', init);
-
-async function init() {
-  showOv('Programm wird geladen…');
-  const mins = parseInt(document.getElementById('off-sel').value) || 120;
-  winEnd = Date.now();
-  winStart = winEnd - mins * 60000;
-  document.getElementById('tl-s').textContent = mins >= 60 ? `−${mins/60}h` : `−${mins}m`;
-
-  try {
-    eps = await loadFeeds(winStart, winEnd);
-    if (!eps.length) throw new Error('leer');
-    render();
-    await loadEp(0, 0);
-    hideOv();
-  } catch(e) {
-    console.warn('Fehler:', e);
-    fallback(mins);
-  }
-}
-
-// ── RSS FEEDS ─────────────────────────────────────────────────────────────────
-async function loadFeeds(from, to) {
-  const all = [];
-  await Promise.allSettled(FEEDS.map(async f => {
-    try {
-      const url = `https://www.srf.ch/feed/podcast/sd/${f.id}.xml`;
-      const r = await fetch(PROXY + encodeURIComponent(url));
-      if (!r.ok) return;
-      const txt = await r.text();
-      const items = parseRSS(txt, f.name);
-      all.push(...items);
-    } catch(e) { /* skip */ }
-  }));
-
-  // Filter nach Zeitfenster
-  const filtered = all
-    .filter(e => e.audioUrl && e.pubMs > 0)
-    .filter(e => e.pubMs <= to && (e.pubMs + e.duration*1000) >= from)
-    .sort((a,b) => a.pubMs - b.pubMs);
-
-  // Duplikate raus
-  const seen = new Set();
-  return filtered.filter(e => {
-    if (seen.has(e.audioUrl)) return false;
-    seen.add(e.audioUrl); return true;
-  });
-}
-
-function parseRSS(xml, showName) {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(xml, 'text/xml');
-  const items = [...doc.querySelectorAll('item')];
-  return items.map(it => {
-    const title = it.querySelector('title')?.textContent?.trim() || showName;
-    const pubDate = it.querySelector('pubDate')?.textContent?.trim();
-    const pubMs = pubDate ? new Date(pubDate).getTime() : 0;
-    const enclosure = it.querySelector('enclosure');
-    const audioUrl = enclosure?.getAttribute('url') || '';
-    const durStr = it.querySelector('duration')?.textContent?.trim() || '0';
-    const duration = parseDur(durStr);
-    return { title, pubMs, duration, audioUrl, show: showName };
-  }).filter(e => e.audioUrl && e.pubMs > 0);
-}
-
-function parseDur(s) {
-  if (!s) return 0;
-  const p = s.split(':').map(Number);
-  if (p.length === 3) return p[0]*3600 + p[1]*60 + p[2];
-  if (p.length === 2) return p[0]*60 + p[1];
-  return parseInt(s) || 0;
-}
-
-function fallback(mins) {
-  eps = [{ title:'SRF 4 News Live', pubMs:winStart, duration:mins*60, audioUrl:FALLBACK, show:'Live' }];
-  render();
-  audio.src = FALLBACK;
-  hideOv();
-  toast('Feeds nicht verfügbar – Live-Stream');
-}
-
-// ── PLAYBACK ──────────────────────────────────────────────────────────────────
-async function loadEp(idx, seekSec) {
-  if (idx < 0 || idx >= eps.length) return;
-  curIdx = idx;
-  const ep = eps[idx];
-  setDot('loading');
-  document.getElementById('np-title').textContent = ep.title;
-  document.getElementById('np-time').textContent = fmt(ep.pubMs);
-  document.getElementById('np-dur').textContent = ep.duration > 0 ? `${Math.round(ep.duration/60)} Min` : '?';
-  render();
-  audio.src = ep.audioUrl;
-  if (seekSec > 0) { audio.addEventListener('canplay', ()=>{ audio.currentTime=seekSec; }, {once:true}); }
-  if (playing) audio.play().catch(()=>{});
-  startTick();
-}
-
-async function togglePlay() {
-  if (audio.paused) {
-    setDot('loading');
-    try { await audio.play(); playing=true; document.getElementById('b-play').textContent='⏸'; setDot('on'); }
-    catch(e) { toast('Wiedergabe fehlgeschlagen'); setDot(''); }
-  } else {
-    audio.pause(); playing=false; document.getElementById('b-play').textContent='▶'; setDot('');
-  }
-}
-
-function seek(d) {
-  if (!eps.length) return;
-  const ep = eps[curIdx];
-  const dur = audio.duration || ep.duration || 999999;
-  const t = (audio.currentTime||0) + d;
-  if (t >= 0 && t <= dur) { audio.currentTime = Math.max(0,t); toast(`${d>0?'+':''}${d}s`); return; }
-  if (t < 0 && curIdx > 0) {
-    const prev = eps[curIdx-1];
-    loadEp(curIdx-1, Math.max(0,(prev.duration||0)+t));
-    if(playing) audio.play().catch(()=>{});
-    toast('← Vorherige');
-  } else if (t > dur && curIdx+1 < eps.length) {
-    loadEp(curIdx+1, 0); if(playing) audio.play().catch(()=>{}); toast('Nächste →');
-  } else if (t < 0) { audio.currentTime = 0; }
-}
-
-function prevEp() { if(curIdx>0){loadEp(curIdx-1,0);if(playing)audio.play().catch(()=>{})} else audio.currentTime=0; }
-function nextEp() { if(curIdx+1<eps.length){loadEp(curIdx+1,0);if(playing)audio.play().catch(()=>{});} }
-
-// ── PROGRESS ──────────────────────────────────────────────────────────────────
-function startTick() {
-  if(tick) clearInterval(tick);
-  tick = setInterval(updateProg, 1000);
-  updateProg();
-}
-
-function updateProg() {
-  if (!eps.length) return;
-  const ep = eps[curIdx];
-  const cur = audio.currentTime||0;
-  const dur = audio.duration||ep.duration||1;
-  document.getElementById('seg-fill').style.width = Math.min(100,(cur/dur)*100)+'%';
-  document.getElementById('seg-el').textContent = fmtD(cur);
-  document.getElementById('seg-re').textContent = '−'+fmtD(Math.max(0,dur-cur));
-  const winLen = winEnd-winStart||1;
-  const pct = Math.min(99,Math.max(0, ((ep.pubMs-winStart)/winLen + (cur/Math.max(dur,1))*(ep.duration*1000/winLen))*100));
-  document.getElementById('tl-fill').style.width = pct+'%';
-  document.getElementById('tl-thumb').style.left = pct+'%';
-  if(!audio.paused) setDot('on');
-}
-
-audio.addEventListener('ended',()=>{
-  if(curIdx+1<eps.length){loadEp(curIdx+1,0);audio.play().catch(()=>{});}
-  else{playing=false;document.getElementById('b-play').textContent='▶';setDot('');toast('Ende');}
+// ── Init ─────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  buildHourButtons();
+  initPlayer();
+  fetchEPG();
 });
-audio.addEventListener('playing',()=>{ playing=true; document.getElementById('b-play').textContent='⏸'; document.getElementById('b-play').classList.remove('dim'); setDot('on'); });
-audio.addEventListener('waiting',()=>{ setDot('loading'); document.getElementById('b-play').classList.add('dim'); });
-audio.addEventListener('canplay',()=>{ document.getElementById('b-play').classList.remove('dim'); });
 
-function tlClick(e) {
-  const r = e.currentTarget.getBoundingClientRect();
-  const pct = (e.clientX-r.left)/r.width;
-  const tMs = winStart + pct*(winEnd-winStart);
-  let found = eps.findIndex((ep,i)=>{ const next=eps[i+1]?.pubMs??winEnd; return tMs>=ep.pubMs&&tMs<next; });
-  if(found<0) found=0;
-  loadEp(found, Math.max(0,(tMs-eps[found].pubMs)/1000));
-  if(playing) audio.play().catch(()=>{});
+// ── HLS Player ──────────────────────────────────────────
+function initPlayer() {
+  if (Hls.isSupported()) {
+    hls = new Hls({
+      liveSyncDurationCount: 3,
+      liveMaxLatencyDurationCount: 10,
+      enableWorker: true,
+    });
+    hls.loadSource(HLS_URL);
+    hls.attachMedia(audio);
+
+    hls.on(Hls.Events.MANIFEST_PARSED, () => {
+      setAnchor();
+      audio.play().catch(() => {});
+    });
+
+    hls.on(Hls.Events.LEVEL_LOADED, () => {
+      if (!hlsReady) {
+        hlsReady = true;
+        loading.classList.add('hidden');
+        startClockTimer();
+      }
+    });
+
+    hls.on(Hls.Events.ERROR, (e, data) => {
+      if (data.fatal) fallbackMP3();
+    });
+  } else if (audio.canPlayType('application/vnd.apple.mpegurl')) {
+    audio.src = HLS_URL;
+    audio.addEventListener('loadedmetadata', () => {
+      setAnchor();
+      loading.classList.add('hidden');
+      startClockTimer();
+      audio.play().catch(() => {});
+    });
+  } else {
+    fallbackMP3();
+  }
+
+  audio.addEventListener('play',  updatePlayUI);
+  audio.addEventListener('pause', updatePlayUI);
+  audio.addEventListener('timeupdate', updateDelayAndEPG);
 }
 
-// ── RENDER ────────────────────────────────────────────────────────────────────
-function render() {
-  const c = document.getElementById('pl');
-  c.innerHTML = '';
-  if (!eps.length) { c.innerHTML='<div style="color:var(--grey);font-size:13px;padding:12px">Keine Sendungen gefunden</div>'; return; }
-  eps.forEach((ep,i)=>{
-    const d = document.createElement('div');
-    d.className='pi'+(i===curIdx?' active':'')+(i<curIdx?' done':'');
-    d.innerHTML=`<span class="pi-t">${fmt(ep.pubMs)}</span><div class="pi-i"><div class="pi-n">${ep.title}</div><div class="pi-d">${ep.duration>0?fmtD(ep.duration):'?'}</div></div><span class="pi-a">${i===curIdx?'▶':'›'}</span>`;
-    d.addEventListener('click',()=>{loadEp(i,0);if(playing)audio.play().catch(()=>{});});
-    c.appendChild(d);
+function fallbackMP3() {
+  hls = null;
+  audio.src = MP3_URL;
+  loading.classList.add('hidden');
+  audio.play().catch(() => {});
+  setStatus('MP3-Fallback (kein Timeshift)');
+  // disable seek buttons
+  ['btn-minus30','btn-minus10','btn-plus10','btn-live'].forEach(id => {
+    document.getElementById(id).style.opacity = '0.3';
+    document.getElementById(id).style.pointerEvents = 'none';
   });
-  setTimeout(()=>{ const a=c.querySelector('.active'); if(a) a.scrollIntoView({block:'nearest',behavior:'smooth'}); },100);
 }
 
-function reload() { if(playing){audio.pause();playing=false;} document.getElementById('b-play').textContent='▶'; setDot(''); init(); }
+// ── Anchor: Wallclock↔Mediatime Mapping ─────────────────
+function setAnchor() {
+  if (!hls) return;
+  const lsp = hls.liveSyncPosition;
+  if (lsp && isFinite(lsp)) {
+    anchorMediatime  = lsp;
+    anchorWallclock  = new Date();
+  }
+}
 
-// ── HELPERS ───────────────────────────────────────────────────────────────────
-function fmt(ms){ if(!ms) return '--:--'; const d=new Date(ms); return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0'); }
-function fmtD(s){ if(!s||isNaN(s)) return '0:00'; return Math.floor(s/60)+':'+Math.floor(s%60).toString().padStart(2,'0'); }
-function setDot(s){ const d=document.getElementById('dot'); d.className=''; if(s) d.classList.add(s); }
-function showOv(m){ document.getElementById('ov-txt').textContent=m||'Lädt…'; document.getElementById('ov').classList.remove('hidden'); }
-function hideOv(){ document.getElementById('ov').classList.add('hidden'); }
-let toastT;
-function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2000); }
+// Aktuelle Wallclock-Zeit basierend auf audio.currentTime
+function getStreamWallclock() {
+  if (!anchorWallclock || !anchorMediatime) return null;
+  const deltaSec = audio.currentTime - anchorMediatime;
+  return new Date(anchorWallclock.getTime() + deltaSec * 1000);
+}
+
+// Versatz zur Live-Kante in Sekunden
+function getDelaySecs() {
+  if (!hls) return 0;
+  const lsp = hls.liveSyncPosition;
+  if (!lsp || !isFinite(lsp)) return 0;
+  return Math.max(0, Math.round(lsp - audio.currentTime));
+}
+
+// ── Steuerung ───────────────────────────────────────────
+function seek(deltaSec) {
+  if (!hls) return;
+  const newTime = audio.currentTime + deltaSec;
+  const lsp = hls.liveSyncPosition;
+  const minTime = lsp - DVR_WINDOW;
+  audio.currentTime = Math.max(minTime, Math.min(lsp, newTime));
+  updateLiveBadge();
+}
+
+function goLive() {
+  if (!hls) return;
+  const lsp = hls.liveSyncPosition;
+  if (lsp && isFinite(lsp)) {
+    audio.currentTime = lsp;
+    setAnchor();
+  }
+  updateLiveBadge();
+}
+
+function togglePlay() {
+  if (audio.paused) audio.play();
+  else audio.pause();
+}
+
+// Sprung zu einem Wallclock-Zeitstempel
+function jumpToWallclock(targetDate) {
+  if (!hls || !anchorWallclock || !anchorMediatime) return;
+  const lsp = hls.liveSyncPosition;
+  const deltaFromAnchor = (targetDate - anchorWallclock) / 1000;
+  const targetMediatime = anchorMediatime + deltaFromAnchor;
+  const minTime = lsp - DVR_WINDOW;
+  if (targetMediatime < minTime || targetMediatime > lsp) {
+    setStatus('Zeitpunkt ausserhalb des DVR-Fensters (max. 2h)');
+    return;
+  }
+  audio.currentTime = targetMediatime;
+  updateLiveBadge();
+}
+
+// ── UI Updates ───────────────────────────────────────────
+function updatePlayUI() {
+  const icon  = document.getElementById('play-icon');
+  const label = document.getElementById('play-label');
+  if (audio.paused) { icon.textContent = '▶'; label.textContent = 'Play'; }
+  else              { icon.textContent = '⏸'; label.textContent = 'Pause'; }
+}
+
+function updateLiveBadge() {
+  const delay = getDelaySecs();
+  const badge = document.getElementById('live-badge');
+  const btnLive = document.getElementById('btn-live');
+  if (delay < 8) {
+    badge.textContent = '● LIVE';
+    badge.classList.remove('delayed');
+    btnLive.classList.add('at-live');
+  } else {
+    badge.textContent = '● ZEITVERSETZT';
+    badge.classList.add('delayed');
+    btnLive.classList.remove('at-live');
+  }
+}
+
+function updateDelayAndEPG() {
+  const delay = getDelaySecs();
+  document.getElementById('delay-secs').textContent = delay;
+  updateLiveBadge();
+  updateEPGDisplay();
+}
+
+// ── Uhr ──────────────────────────────────────────────────
+function startClockTimer() {
+  if (clockTimer) clearInterval(clockTimer);
+  clockTimer = setInterval(updateClock, 500);
+  updateClock();
+}
+
+function updateClock() {
+  const wc = getStreamWallclock();
+  const el = document.getElementById('stream-clock');
+  if (!wc) {
+    // Fallback: Systemzeit
+    el.textContent = new Date().toLocaleTimeString('de-DE');
+    return;
+  }
+  el.textContent = wc.toLocaleTimeString('de-DE');
+  // Anchor regelmässig nachkalibrieren wenn live
+  if (getDelaySecs() < 8) setAnchor();
+}
+
+// ── EPG ──────────────────────────────────────────────────
+async function fetchEPG() {
+  try {
+    const now = new Date();
+    const dateStr = now.toISOString().slice(0, 10); // YYYY-MM-DD
+    const url = `${EPG_API}?publisherId=${encodeURIComponent(PUBLISHER)}&date=${dateStr}&maxLength=48`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    parseEPG(json);
+  } catch(e) {
+    document.getElementById('epg-title').textContent = 'Programmdaten nicht verfügbar';
+    console.warn('EPG Fehler:', e);
+  }
+
+  // Morgen auch laden (falls nah an Mitternacht)
+  try {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const dateStr = tomorrow.toISOString().slice(0, 10);
+    const url = `${EPG_API}?publisherId=${encodeURIComponent(PUBLISHER)}&date=${dateStr}&maxLength=48`;
+    const res = await fetch(url);
+    if (res.ok) {
+      const json = await res.json();
+      parseEPG(json, true);
+    }
+  } catch(e) {}
+
+  // Alle 5 Minuten refreshen
+  setTimeout(fetchEPG, 5 * 60 * 1000);
+}
+
+function parseEPG(json, append = false) {
+  // ARD Programm-API Struktur erkunden
+  let items = [];
+  if (json.data) {
+    // verschiedene mögliche Strukturen
+    const d = json.data;
+    if (Array.isArray(d)) items = d;
+    else if (d.broadcastSchedule) items = d.broadcastSchedule;
+    else if (d.items) items = d.items;
+    else if (d.program) items = d.program;
+    else {
+      // Flach durchsuchen
+      for (const key of Object.keys(d)) {
+        if (Array.isArray(d[key])) { items = d[key]; break; }
+      }
+    }
+  } else if (Array.isArray(json)) {
+    items = json;
+  } else if (json.broadcastSchedule) {
+    items = json.broadcastSchedule;
+  } else if (json.items) {
+    items = json.items;
+  }
+
+  const parsed = items.map(item => ({
+    title: item.title || item.broadcastTitle || item.show?.title || '?',
+    start: new Date(item.broadcastStart || item.startDate || item.start || item.broadcastOn),
+    end:   new Date(item.broadcastEnd   || item.endDate   || item.end   || item.broadcastEnd),
+  })).filter(i => i.start && !isNaN(i.start));
+
+  if (append) epgData = [...epgData, ...parsed].sort((a,b) => a.start-b.start);
+  else        epgData = parsed.sort((a,b) => a.start - b.start);
+
+  updateEPGDisplay();
+  if (parsed.length > 0) setStatus(`EPG: ${parsed.length} Einträge geladen`);
+  else                   setStatus('EPG: Keine Einträge – Struktur prüfen');
+}
+
+function updateEPGDisplay() {
+  if (!epgData.length) return;
+  const wc = getStreamWallclock() || new Date();
+
+  const current = epgData.find(i => wc >= i.start && wc < i.end);
+  const titleEl = document.getElementById('epg-title');
+  const timeEl  = document.getElementById('epg-time');
+  const bar     = document.getElementById('epg-progress-bar');
+  const label   = document.getElementById('epg-label');
+
+  const delay = getDelaySecs();
+  label.textContent = delay > 8 ? 'Lief um' : 'Jetzt';
+
+  if (current) {
+    titleEl.textContent = current.title;
+    const startStr = current.start.toLocaleTimeString('de-DE', {hour:'2-digit', minute:'2-digit'});
+    const endStr   = current.end.toLocaleTimeString('de-DE',   {hour:'2-digit', minute:'2-digit'});
+    timeEl.textContent = `${startStr} – ${endStr}`;
+
+    const total    = current.end - current.start;
+    const elapsed  = wc - current.start;
+    const pct      = Math.min(100, Math.max(0, (elapsed / total) * 100));
+    bar.style.width = pct + '%';
+  } else {
+    titleEl.textContent = '–';
+    timeEl.textContent = '';
+    bar.style.width = '0%';
+  }
+}
+
+// ── Stunden-Buttons ──────────────────────────────────────
+function buildHourButtons() {
+  const container = document.getElementById('hour-scroll');
+  container.innerHTML = '';
+  const now = new Date();
+
+  for (let h = 0; h <= 7; h++) {
+    const t = new Date(now);
+    t.setMinutes(0, 0, 0);
+    t.setHours(t.getHours() - h);
+
+    const btn = document.createElement('button');
+    btn.className = 'hour-btn';
+    btn.textContent = h === 0
+      ? `${pad(t.getHours())}:00 (jetzt)`
+      : `${pad(t.getHours())}:00`;
+
+    const targetDate = new Date(t); // closure
+    btn.onclick = () => {
+      document.querySelectorAll('.hour-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      jumpToWallclock(targetDate);
+    };
+
+    container.appendChild(btn);
+  }
+}
+
+function pad(n) { return String(n).padStart(2, '0'); }
+
+// ── Status ───────────────────────────────────────────────
+function setStatus(msg) {
+  document.getElementById('status-bar').textContent = msg;
+}
+
+// Stunden-Buttons alle Minute neu bauen (falls Stunde wechselt)
+setInterval(buildHourButtons, 60 * 1000);
 </script>
 </body>
 </html>
